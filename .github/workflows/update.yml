@@ -61,12 +61,14 @@ jobs:
         working-directory: ./thonk-kun.new/thinkerAI
         run: |
           rm -rf ./src/
+          rm -rf ./docs/
+          rm -rf ./examples/
           rm -rf ./python/
           mv README.md README_thinkerAI.md
       - name: Copy thinkerAI
         working-directory: ./thonk-kun.new/
         run: |
-          cp -R ./thinkerAI/* ./
+          cp -aT ./thinkerAI/* ./
           rm -rf ./thinkerAI
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
@@ -79,7 +81,8 @@ jobs:
         run: |
           mv ./thinkReplyer/README.md ./README_thinkReplyer.md
           mkdir -p ./runtimes
-          mv ./thinkReplyer ./runtimes/thinkReplyer
+          cp -aT ./thinkReplyer/* ./runtimes/thinkReplyer
+          rm -rf ./thinkReplyer/
       - name: Test
         working-directory: ./thonk-kun.new
         run: |
