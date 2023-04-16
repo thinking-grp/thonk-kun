@@ -16,13 +16,15 @@ jobs:
         with:
           node-version: 16.x
       - name: Copy myself
+        working-directory: ./
         run: |
-          mkdir ./thonk-kun
-          cp -R ./* ./thonk-kun/
+          mkdir ./thonk-kun.new
+          cp -R ./* ./thonk-kun.new/
           mkdir ./thonk-kun.backup
           cp -R ./* ./thonk-kun.backup/
       - name: Clean myself
-        run: >
+        working-directory: ./thonk-kun.new/thinkerAI
+        run: |
           # 特定のフォルダ3のリストを作成
 
           exclude_folders=(.github src)
@@ -30,14 +32,14 @@ jobs:
 
           # 特定のフォルダ1内のフォルダリストを作成
 
-          folders=($(find folder1 -mindepth 1 -maxdepth 1 -type d -printf '%f\n'))
+          folders=($(find thonk-kun.new -mindepth 1 -maxdepth 1 -type d -printf '%f\n'))
 
 
           # 特定のフォルダ3以外のフォルダを削除
 
           for folder in "${folders[@]}"; do
             if [[ ! " ${exclude_folders[@]} " =~ " ${folder} " ]]; then
-              rm -rf "folder1/${folder}"
+              rm -rf "thonk-kun.new/${folder}"
             fi
           done
 
@@ -48,31 +50,31 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: thinking-grp/thinkerAI
-          path: ./thonk-kun/thinkerAI
+          path: ./thonk-kun.new/thinkerAI
           ssh-key: ${{ secrets.THINKERAI_SSH_KEY }}
       - name: Clean thinkerAI
-        working-directory: ./thonk-kun/thinkerAI
+        working-directory: ./thonk-kun.new/thinkerAI
         run: |
           rm -rf ./src/
           rm -rf ./python/
           mv README.md README_thinkerAI.md
       - name: Copy thinkerAI
-        working-directory: ./thonk-kun
+        working-directory: ./thonk-kun.new
         run: |
           cp -R ./thinkerAI ./
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
         with:
           repository: thinking-grp/thinkReplyer
-          path: ./thonk-kun/thinkReplyer
+          path: ./thonk-kun.new/thinkReplyer
           ssh-key: ${{ secrets.THINKREPLYER_SSH_KEY }}
       - name: Copy thinkReplyer
-        working-directory: ./thonk-kun
+        working-directory: ./thonk-kun.new
         run: |
           mv ./thinkReplyer/README.md ./thinkReplyer/README_thinkReplyer.md
           mv ./thinkReplyer ./runtimes
       - name: Test
-        working-directory: ./thonk-kun
+        working-directory: ./thonk-kun.new
         run: >
           if ! diff -qr --speed-large-files ./ ../thonk-kun.backup >/dev/null 2>&1;
           then
@@ -85,12 +87,12 @@ jobs:
       - name: Commit
         working-directory: ./
         run: >
-          if ! diff -qr --speed-large-files ./thonk-kun ./thonk-kun.backup >/dev/null
+          if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
           2>&1; then
             echo "Folder differences found."
             rm -rf ./thonk-kun.backup
-            cp -R ./thonk-kun ./
-            rm -rf ./thonk-kun
+            cp -R ./thonk-kun.new ./
+            rm -rf ./thonk-kun.new
 
             ls
           else
