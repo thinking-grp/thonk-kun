@@ -1,0 +1,19 @@
+{
+  "name": "thinkreplyer",
+  "version": "1.0.0-alpha.1",
+  "description": "thinkReplyer is a pseudo AI model for thinkerAI developed by thinking-grp.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "kuromoji": "^0.1.2"
+  },
+  "devDependencies": {
+    "@types/kuromoji": "^0.1.1",
+    "@types/node": "^18.15.11"
+  }
+}
