@@ -81,7 +81,7 @@ jobs:
           mv ./thinkReplyer/README.md ./thinkReplyer/README_thinkReplyer.md
           mv ./thinkReplyer ./runtimes
           
-          ls ../
+          ls ./
       - name: Test
         working-directory: ./thonk-kun.new
         run: >
