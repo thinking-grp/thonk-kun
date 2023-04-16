@@ -19,9 +19,10 @@ jobs:
         working-directory: ./
         run: |
           mkdir -p thonk-kun.new
-          cp -R ./* thonk-kun.new/
+          rsync -Rr ./* thonk-kun.new/
           mkdir -p thonk-kun.backup
-          cp -R ./* thonk-kun.backup/
+          rsync -Rr ./* thonk-kun.backup/
+          ls ./thonk-kun.new
       - name: Clean myself
         working-directory: ./thonk-kun.new/thinkerAI
         run: |
