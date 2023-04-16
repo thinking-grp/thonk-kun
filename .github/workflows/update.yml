@@ -32,7 +32,7 @@ jobs:
         run: |
           # 特定のフォルダ3のリストを作成
 
-          exclude_folders=(.github src)
+          exclude_folders=(.github src .gitignore)
 
 
           # 特定のフォルダ1内のフォルダリストを作成
