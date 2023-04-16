@@ -69,7 +69,7 @@ jobs:
         working-directory: ./thonk-kun.new/
         run: |
           rm -rf ./thinkerAI/.git 
-          cp -aT ./thinkerAI/* ./
+          cp -arT ./thinkerAI/* ./
           rm -rf ./thinkerAI
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
@@ -83,7 +83,7 @@ jobs:
           rm -rf ./thinkReplyer/.git 
           mv ./thinkReplyer/README.md ./README_thinkReplyer.md
           mkdir -p ./runtimes
-          cp -aT ./thinkReplyer/* ./runtimes/thinkReplyer
+          cp -arT ./thinkReplyer/* ./runtimes/thinkReplyer
           rm -rf ./thinkReplyer/
       - name: Test
         working-directory: ./thonk-kun.new
