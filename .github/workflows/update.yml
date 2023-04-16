@@ -66,9 +66,10 @@ jobs:
           rm -rf ./python/
           mv README.md README_thinkerAI.md
       - name: Copy thinkerAI
-        working-directory: ./
+        working-directory: ./thonk-kun.new/
         run: |
           rsync -Rr ./thinkerAI ./
+          ls ./
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
         with:
