@@ -82,16 +82,16 @@ jobs:
           sudo apt -y install jq
 
           # Merge dependencies
-          jq -s '.[0] * .[1]' package.json ./thinkerAI/package.json > merged.json
+          jq -s '.[0] * .[1]' package.json ./thinkerAI/package.json > ./thinkerAI/merged.json
 
           # Remove duplicate dependencies
-          jq 'del(.dependencies."package-name")' merged.json > final.json
+          jq 'del(.dependencies."package-name")' ./thinkerAI/merged.json > ./thinkerAI/final.json
 
           # Rename final.json to package.json
-          mv -f final.json package.json
+          mv -f ./thinkerAI/final.json ./thinkerAI/package.json
 
-          rm -f ./thinkerAI/package.json
-          rm -f ./merged.json
+          rm -f ./package.json
+          rm -f ./thinkerAI/merged.json
 
           npm install
           
