@@ -104,7 +104,7 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
-          diff -q ./thonk-kun.new ./thonk-kun.backup
+          diff -qr ./thonk-kun.new ./thonk-kun.backup
 
           if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
           2>&1; then
