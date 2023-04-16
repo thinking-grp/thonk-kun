@@ -80,7 +80,7 @@ jobs:
         working-directory: ./thonk-kun.new
         run: |
           mv ./thinkReplyer/README.md ./thinkReplyer/README_thinkReplyer.md
-          mkdir ./runtimes
+          mkdir -p ./runtimes
           mv ./thinkReplyer ./runtimes/thinkReplyer
       - name: Test
         working-directory: ./thonk-kun.new
