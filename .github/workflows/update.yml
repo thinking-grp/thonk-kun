@@ -82,7 +82,7 @@ jobs:
           sudo apt -y install jq
 
           # Merge dependencies
-          jq -s '.[0] * .[1]' package.json ./thinkerAI/package.json > ./thinkerAI/merged.json
+          jq -s '.[0] * .[1]' ./thinkerAI/package.json package.json > ./thinkerAI/merged.json
 
           # Remove duplicate dependencies
           jq 'del(.dependencies."package-name")' ./thinkerAI/merged.json > ./thinkerAI/final.json
@@ -144,8 +144,7 @@ jobs:
           rm -rf ./thonk-kun.new/node_modules
           
           if ! diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null; then
-            echo "Folder contents are different. Files changed:"
-            diff -rab ./thonk-kun.new ./thonk-kun.backup
+            echo "Folder contents are different."
 
             rm -rf ./thonk-kun.backup
             cp -R ./thonk-kun.new/* ./
