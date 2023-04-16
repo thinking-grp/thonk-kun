@@ -26,6 +26,7 @@ jobs:
           rm -rf ./thonk-kun.new/thonk-kun.new/
           rm -rf ./thonk-kun.backup/thonk-kun.backup/
           rm -rf ./thonk-kun.backup/thonk-kun.new/
+          ls
 
       - name: Clean myself
         working-directory: ./thonk-kun.new
