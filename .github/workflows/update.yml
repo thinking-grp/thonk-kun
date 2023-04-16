@@ -83,7 +83,8 @@ jobs:
           rm -rf ./thinkReplyer/.git 
           mv ./thinkReplyer/README.md ./README_thinkReplyer.md
           mkdir -p ./runtimes
-          cp -ra ./thinkReplyer/* ./runtimes/thinkReplyer
+          mkdir -p ./runtimes/thinkReplyer/
+          cp -ra ./thinkReplyer/* ./runtimes/thinkReplyer/
           rm -rf ./thinkReplyer/
       - name: Test
         working-directory: ./thonk-kun.new
