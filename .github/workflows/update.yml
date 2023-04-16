@@ -99,6 +99,8 @@ jobs:
         run: >
           if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
           2>&1; then
+            ls
+            
             echo "Folder differences found."
             rm -rf ./thonk-kun.backup
             rsync -Rr ./thonk-kun.new/* ./
