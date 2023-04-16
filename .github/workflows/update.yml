@@ -68,7 +68,7 @@ jobs:
       - name: Copy thinkerAI
         working-directory: ./
         run: |
-          rsync -Rr ./thonk-kun.new/thinkerAI ./thonk-kun.new
+          rsync -Rr ./thinkerAI ./
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
         with:
@@ -82,6 +82,7 @@ jobs:
           mv ./thinkReplyer ./runtimes
           
           ls ./
+          ls ./runtimes
       - name: Test
         working-directory: ./thonk-kun.new
         run: >
