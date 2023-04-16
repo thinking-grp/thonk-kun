@@ -40,8 +40,8 @@ interface JSModel {
     text: string;
     history: string[];
   };
-  interact: (text: string) => string;
-  train: (trainingData: any) => void;
+  interact: (text: string) => any | Promise<any>;
+  train: (trainingData: any) => void | Promise<void>;
 }
 
 /**
@@ -116,13 +116,13 @@ export class JSModelProcess {
     return this.model.interactWithHistory(text, history);
   }
   
-  train (trainingData: any) {
-    this.model.train(trainingData);
+  async train (trainingData: any) {
+    await this.model.train(trainingData);
   }
   
-  interact (text: string, history?: string[]): string {
+  async interact (text: string, history?: string[]): Promise<any> {
     if (!history) history = [];
 
-    return this.model.interact(text);
+    return await this.model.interact(text);
   }
 }
