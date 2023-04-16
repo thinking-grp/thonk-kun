@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[535],{5641:e=>{e.exports=JSON.parse('{"title":"\u6700\u65b0\u306e\u6295\u7a3f","items":[{"title":"welcome","permalink":"/thinkerAI/ja/blog/2023/02/27/welcome"}]}')}}]);

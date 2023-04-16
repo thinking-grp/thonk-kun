@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>thinkerAI Blog</title>
+        <link>https://thinking-grp.github.io/thinkerAI/blog</link>
+        <description>thinkerAI Blog</description>
+        <lastBuildDate>Mon, 27 Feb 2023 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[welcome]]></title>
+            <link>https://thinking-grp.github.io/thinkerAI/blog/2023/02/27/welcome</link>
+            <guid>https://thinking-grp.github.io/thinkerAI/blog/2023/02/27/welcome</guid>
+            <pubDate>Mon, 27 Feb 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[<!-- ---]]></description>
+        </item>
+    </channel>
+</rss>
