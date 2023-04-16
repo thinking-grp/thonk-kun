@@ -1,7 +1,0 @@
-simpletransformers==0.63.9
-transformers==4.21
-torch==1.13.1
-
-# -------------------------------------
-
-Flask==2.2.3
