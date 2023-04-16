@@ -62,7 +62,6 @@ jobs:
         run: |
           rm -rf ./src/
           rm -rf ./docs/
-          rm -rf ./examples/
           rm -rf ./python/
           mv README.md README_thinkerAI.md
       - name: Copy thinkerAI
