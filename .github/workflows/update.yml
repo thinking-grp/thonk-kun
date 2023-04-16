@@ -104,10 +104,9 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
-          diff -qr ./thonk-kun.new ./thonk-kun.backup
-
-          if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
-          2>&1; then
+          if [ "$(find ./thonk-kun.new -type f -print0 | sort -z | xargs -0 md5sum)" = "$(find ./thonk-kun.backup -type f -print0 | sort -z | xargs -0 md5sum)" ]; then
+            echo "Folder contents are the same."
+          else
             echo "Folder differences found."
 
             rm -rf ./thonk-kun.backup
@@ -117,6 +116,4 @@ jobs:
             git add .
             git commit -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
             git push origin HEAD:main
-          else
-            echo "Folder contents are the same."
           fi
