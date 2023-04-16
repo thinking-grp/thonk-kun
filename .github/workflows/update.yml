@@ -68,7 +68,7 @@ jobs:
       - name: Copy thinkerAI
         working-directory: ./thonk-kun.new/
         run: |
-          cp -rf ./thinkerAI/* ./
+          cp -R ./thinkerAI/* ./
           rm -rf ./thinkerAI
           ls ./
       - name: Checkout thinkReplyer
@@ -101,7 +101,7 @@ jobs:
           2>&1; then
             echo "Folder differences found."
             rm -rf ./thonk-kun.backup
-            cp -R ./thonk-kun.new ./
+            rsync -Rr ./thonk-kun.new/* ./
             rm -rf ./thonk-kun.new
 
             ls
