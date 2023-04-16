@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
+
       - name: Copy myself
         working-directory: ./
         run: |
@@ -54,6 +55,7 @@ jobs:
           rm -f README_thinkerAI.md
 
           rm -f README_thinkReplyer.md
+
       - name: Checkout thinkerAI
         uses: actions/checkout@v3
         with:
@@ -61,6 +63,7 @@ jobs:
           path: ./thonk-kun.new/thinkerAI
           ssh-key: ${{ secrets.THINKERAI_SSH_KEY }}
           ref: refs/heads/develop
+
       - name: Clean thinkerAI
         working-directory: ./thonk-kun.new/thinkerAI
         run: |
@@ -71,18 +74,38 @@ jobs:
           rm -f ./install-win32-x64.bat
           rm -f ./LICENSE
           mv README.md README_thinkerAI.md
+
+      - Merge package.json
+        working-directory: ./thonk-kun.new/
+        run: |
+          sudo apt -y update
+          sudo apt -y install jq
+
+          # Merge dependencies
+          jq -s '.[0] * .[1]' package.json ./thinkerAI/package.json > merged.json
+
+          # Remove duplicate dependencies
+          jq 'del(.dependencies."package-name")' merged.json > final.json
+
+          # Rename final.json to package.json
+          mv -f final.json package.json
+
+          npm install
+          
       - name: Copy thinkerAI
         working-directory: ./thonk-kun.new/
         run: |
           rm -rf ./thinkerAI/.git 
           cp -ra ./thinkerAI/* ./
           rm -rf ./thinkerAI
+
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
         with:
           repository: thinking-grp/thinkReplyer
           path: ./thonk-kun.new/thinkReplyer
           ssh-key: ${{ secrets.THINKREPLYER_SSH_KEY }}
+
       - name: Copy thinkReplyer
         working-directory: ./thonk-kun.new
         run: |
@@ -92,6 +115,7 @@ jobs:
           mkdir -p ./runtimes/thinkReplyer/
           cp -ra ./thinkReplyer/* ./runtimes/thinkReplyer/
           rm -rf ./thinkReplyer/
+
       - name: Test
         working-directory: ./thonk-kun.new
         run: |
@@ -103,6 +127,7 @@ jobs:
           else
             echo "Folder contents are the same."
           fi
+
       - name: Set git config
         run: |
           git config --local user.email "mf7cli120@icloud.com"
