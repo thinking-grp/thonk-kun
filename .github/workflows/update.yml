@@ -69,6 +69,7 @@ jobs:
         working-directory: ./thonk-kun.new/
         run: |
           cp -rf ./thinkerAI/* ./
+          rm -rf ./thinkerAI
           ls ./
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
