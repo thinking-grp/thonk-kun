@@ -104,7 +104,7 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
-          if [ "$(find ./thonk-kun.new -type f -print0 | sort -z | xargs -0 md5sum)" = "$(find ./thonk-kun.backup -type f -print0 | sort -z | xargs -0 md5sum)" ]; then
+          if ! diff -qab ./thonk-kun.new ./thonk-kun.backup >/dev/null 2>&1; then
             echo "Folder contents are the same."
           else
             echo "Folder differences found."
