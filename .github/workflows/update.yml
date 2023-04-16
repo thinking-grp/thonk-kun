@@ -40,13 +40,17 @@ jobs:
           done
 
 
-          rm README_thinkerAI.md
+          rm -f README_thinkerAI.md
 
-          rm README_thinkReplyer.md
-      - name: Clone thinkerAI
+          rm -f README_thinkReplyer.md
+      - name: Checkout thinkerAI
         working-directory: ./thonk-kun
-        run: git clone https://thinking-grp@github.com/thinking-grp/thinkerAI.git
-      - name: Delete folders and files
+        uses: actions/checkout@v3
+        with:
+          repository: thinking-grp/thinkerAI
+          path: ./thinkerAI
+          ssh-key: ${{ secrets.THINKERAI_SSH_KEY }}
+      - name: Clean thinkerAI
         working-directory: ./thonk-kun/thinkerAI
         run: |
           rm -rf ./src/
@@ -56,9 +60,13 @@ jobs:
         working-directory: ./thonk-kun
         run: |
           cp -R ./thinkerAI ./
-      - name: Clone thinkReplyer
+      - name: Checkout thinkReplyer
         working-directory: ./thonk-kun
-        run: git clone https://thinking-grp@github.com/thinking-grp/thinkReplyer.git
+        uses: actions/checkout@v3
+        with:
+          repository: thinking-grp/thinkReplyer
+          path: ./thinkReplyer
+          ssh-key: ${{ secrets.THINKREPLYER_SSH_KEY }}
       - name: Copy thinkReplyer
         working-directory: ./thonk-kun
         run: |
