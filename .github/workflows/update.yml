@@ -18,9 +18,9 @@ jobs:
       - name: Copy myself
         run: |
           mkdir ./thonk-kun
+          cp -R ./* ./thonk-kun/
           mkdir ./thonk-kun.backup
-          cp -R ./ ./thonk-kun
-          cp -R ./ ./thonk-kun.backup
+          cp -R ./* ./thonk-kun.backup/
       - name: Clean myself
         run: >
           # 特定のフォルダ3のリストを作成
