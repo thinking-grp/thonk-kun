@@ -1,7 +1,7 @@
 name: Update programs
 on:
   schedule:
-    - cron: "30 4 * * *" # 午前0時に実行(UTC基準なので9時間引く)
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
