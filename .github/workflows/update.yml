@@ -19,10 +19,13 @@ jobs:
         working-directory: ./
         run: |
           mkdir -p thonk-kun.new
-          rsync -Rr ./* thonk-kun.new/
           mkdir -p thonk-kun.backup
           rsync -Rr ./* thonk-kun.backup/
-          ls ./thonk-kun.new
+          rsync -Rr ./* thonk-kun.new/
+          rm -rf ./thonk-kun.new/thonk-kun.backup/
+          rm -rf ./thonk-kun.new/thonk-kun.new/
+          rm -rf ./thonk-kun.backup/thonk-kun.backup/
+          rm -rf ./thonk-kun.backup/thonk-kun.new/
       - name: Clean myself
         working-directory: ./thonk-kun.new
         run: |
@@ -74,6 +77,8 @@ jobs:
         run: |
           mv ./thinkReplyer/README.md ./thinkReplyer/README_thinkReplyer.md
           mv ./thinkReplyer ./runtimes
+          
+          ls ../
       - name: Test
         working-directory: ./thonk-kun.new
         run: >
