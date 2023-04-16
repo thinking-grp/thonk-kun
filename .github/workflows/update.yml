@@ -44,11 +44,10 @@ jobs:
 
           rm -f README_thinkReplyer.md
       - name: Checkout thinkerAI
-        working-directory: ./thonk-kun
         uses: actions/checkout@v3
         with:
           repository: thinking-grp/thinkerAI
-          path: ./thinkerAI
+          path: ./thonk-kun/thinkerAI
           ssh-key: ${{ secrets.THINKERAI_SSH_KEY }}
       - name: Clean thinkerAI
         working-directory: ./thonk-kun/thinkerAI
@@ -61,11 +60,10 @@ jobs:
         run: |
           cp -R ./thinkerAI ./
       - name: Checkout thinkReplyer
-        working-directory: ./thonk-kun
         uses: actions/checkout@v3
         with:
           repository: thinking-grp/thinkReplyer
-          path: ./thinkReplyer
+          path: ./thonk-kun/thinkReplyer
           ssh-key: ${{ secrets.THINKREPLYER_SSH_KEY }}
       - name: Copy thinkReplyer
         working-directory: ./thonk-kun
