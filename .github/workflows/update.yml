@@ -88,11 +88,13 @@ jobs:
           jq 'del(.dependencies."package-name")' ./thinkerAI/merged.json > ./thinkerAI/final.json
 
           # Rename final.json to package.json
-          mv -f ./thinkerAI/final.json ./thinkerAI/package.json
+          mv -f ./thinkerAI/final.json ./package.json
 
-          rm -f ./package.json
+          rm -f ./thinkerAI/package.json
           rm -f ./thinkerAI/merged.json
 
+          cat package.json
+          
           npm install
           
       - name: Copy thinkerAI
