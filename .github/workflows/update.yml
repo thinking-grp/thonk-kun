@@ -17,6 +17,8 @@ jobs:
           node-version: 16.x
       - name: Copy myself
         run: |
+          mkdir ./thonk-kun
+          mkdir ./thonk-kun.backup
           cp -R ./ ./thonk-kun
           cp -R ./ ./thonk-kun.backup
       - name: Clean myself
@@ -38,7 +40,6 @@ jobs:
               rm -rf "folder1/${folder}"
             fi
           done
-
 
           rm -f README_thinkerAI.md
 
