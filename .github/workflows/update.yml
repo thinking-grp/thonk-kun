@@ -24,7 +24,7 @@ jobs:
           rsync -Rr ./* thonk-kun.backup/
           ls ./thonk-kun.new
       - name: Clean myself
-        working-directory: ./thonk-kun.new/thinkerAI
+        working-directory: ./thonk-kun.new
         run: |
           # 特定のフォルダ3のリストを作成
 
