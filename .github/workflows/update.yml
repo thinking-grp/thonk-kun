@@ -75,7 +75,7 @@ jobs:
           rm -f ./LICENSE
           mv README.md README_thinkerAI.md
 
-      - Merge package.json
+      - name: Merge package.json
         working-directory: ./thonk-kun.new/
         run: |
           sudo apt -y update
@@ -91,7 +91,7 @@ jobs:
           mv -f final.json package.json
 
           rm -f ./thinkerAI/package.json
-          
+
           npm install
           
       - name: Copy thinkerAI
