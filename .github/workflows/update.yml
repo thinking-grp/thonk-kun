@@ -26,10 +26,11 @@ jobs:
           rm -rf ./thonk-kun.new/thonk-kun.new/
           rm -rf ./thonk-kun.backup/thonk-kun.backup/
           rm -rf ./thonk-kun.backup/thonk-kun.new/
-          ls
+          ls ./thonk-kun.new
+          ls ./thonk-kun.backup
 
       - name: Clean myself
-        working-directory: ./thonk-kun.new
+        working-directory: ./
         run: |
           # 特定のフォルダ3のリストを作成
 
