@@ -26,8 +26,6 @@ jobs:
           rm -rf ./thonk-kun.new/thonk-kun.new/
           rm -rf ./thonk-kun.backup/thonk-kun.backup/
           rm -rf ./thonk-kun.backup/thonk-kun.new/
-          ls ./thonk-kun.new
-          ls ./thonk-kun.backup
 
       - name: Clean myself
         working-directory: ./
@@ -70,7 +68,6 @@ jobs:
         run: |
           cp -R ./thinkerAI/* ./
           rm -rf ./thinkerAI
-          ls ./
       - name: Checkout thinkReplyer
         uses: actions/checkout@v3
         with:
@@ -85,7 +82,7 @@ jobs:
           mv ./thinkReplyer ./runtimes/thinkReplyer
       - name: Test
         working-directory: ./thonk-kun.new
-        run: >
+        run: |
           if ! diff -qr --speed-large-files ./ ../thonk-kun.backup >/dev/null 2>&1;
           then
             echo "Folder differences found."
@@ -94,19 +91,24 @@ jobs:
           else
             echo "Folder contents are the same."
           fi
+      - name: Set git config
+        run: |
+          git config --local user.email "mf7cli120@icloud.com"
+          git config --local user.name "thinkerAI bot"
+
       - name: Commit
         working-directory: ./
-        run: >
+        run: |
           if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
           2>&1; then
-            ls
-
             echo "Folder differences found."
             rm -rf ./thonk-kun.backup
             cp -R ./thonk-kun.new/* ./
             rm -rf ./thonk-kun.new
 
-            ls
+            git add .
+            git commit -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
+            git push origin HEAD:main
           else
             echo "Folder contents are the same."
           fi
