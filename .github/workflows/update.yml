@@ -114,6 +114,6 @@ jobs:
             rm -rf ./thonk-kun.new
 
             git add .
-            git commit -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
+            git commit -q -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
             git push origin HEAD:main
           fi
