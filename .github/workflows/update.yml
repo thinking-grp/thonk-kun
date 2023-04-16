@@ -18,14 +18,15 @@ jobs:
       - name: Copy myself
         working-directory: ./
         run: |
-          mkdir -p thonk-kun.new
-          mkdir -p thonk-kun.backup
+          mkdir thonk-kun.new
+          mkdir thonk-kun.backup
           rsync -Rr ./* thonk-kun.backup/
           rsync -Rr ./* thonk-kun.new/
           rm -rf ./thonk-kun.new/thonk-kun.backup/
           rm -rf ./thonk-kun.new/thonk-kun.new/
           rm -rf ./thonk-kun.backup/thonk-kun.backup/
           rm -rf ./thonk-kun.backup/thonk-kun.new/
+
       - name: Clean myself
         working-directory: ./thonk-kun.new
         run: |
