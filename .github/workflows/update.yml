@@ -91,6 +91,7 @@ jobs:
           mv -f final.json package.json
 
           rm -f ./thinkerAI/package.json
+          rm -f ./merged.json
 
           npm install
           
@@ -138,10 +139,11 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
+          rm -rf ./thonk-kun.new/node_modules
+          
           if ! diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null; then
             echo "Folder contents are different. Files changed:"
             diff -rab ./thonk-kun.new ./thonk-kun.backup
-            exit 1
 
             rm -rf ./thonk-kun.backup
             cp -R ./thonk-kun.new/* ./
