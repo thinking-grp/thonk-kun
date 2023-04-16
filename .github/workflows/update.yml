@@ -66,6 +66,9 @@ jobs:
           rm -rf ./src/
           rm -rf ./docs/
           rm -rf ./python/
+          rm -f ./install-darwin-x64.sh
+          rm -f ./install-win32-x64.bat
+          rm -f ./LICENSE
           mv README.md README_thinkerAI.md
       - name: Copy thinkerAI
         working-directory: ./thonk-kun.new/
