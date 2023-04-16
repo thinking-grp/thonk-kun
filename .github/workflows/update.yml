@@ -105,11 +105,11 @@ jobs:
         working-directory: ./
         run: |
           if ! diff -qab ./thonk-kun.new ./thonk-kun.backup >/dev/null 2>&1; then
+            echo "Folder contents are the same."
+          else
             echo "Folder contents are different. Files changed:"
             diff -rab ./thonk-kun.new ./thonk-kun.backup
             exit 1
-          else
-            echo "Folder differences found."
 
             rm -rf ./thonk-kun.backup
             cp -R ./thonk-kun.new/* ./
