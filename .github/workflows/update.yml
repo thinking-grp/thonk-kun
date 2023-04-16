@@ -1,0 +1,95 @@
+name: Update programs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  thinker-ai:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          submodules: 'recursive'
+          
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
+      - name: Copy myself
+        run: |
+          cp -R ./ ./thonk-kun
+          cp -R ./ ./thonk-kun.backup
+
+      - name: Clean myself
+        run: |
+          # 特定のフォルダ3のリストを作成
+          exclude_folders=(.github src)
+          
+          # 特定のフォルダ1内のフォルダリストを作成
+          folders=($(find folder1 -mindepth 1 -maxdepth 1 -type d -printf '%f\n'))
+          
+          # 特定のフォルダ3以外のフォルダを削除
+          for folder in "${folders[@]}"; do
+            if [[ ! " ${exclude_folders[@]} " =~ " ${folder} " ]]; then
+              rm -rf "folder1/${folder}"
+            fi
+          done
+
+          rm README_thinkerAI.md
+          rm README_thinkReplyer.md
+
+      - name: Clone thinkerAI
+        working-directory: ./thonk-kun
+        run: git clone https://thinking-grp@github.com/thinking-grp/thinkerAI.git
+
+      - name: Delete folders and files
+        working-directory: ./thonk-kun/thinkerAI
+        run: |
+          rm -rf ./src/
+          rm -rf ./python/
+          mv README.md README_thinkerAI.md
+
+      - name: Copy thinkerAI
+        working-directory: ./thonk-kun
+        run: |
+          cp -R ./thinkerAI ./
+
+      - name: Clone thinkReplyer
+        working-directory: ./thonk-kun
+        run: git clone https://thinking-grp@github.com/thinking-grp/thinkReplyer.git
+     
+      - name: Copy thinkReplyer
+        working-directory: ./thonk-kun
+        run: |
+          mv ./thinkReplyer/README.md ./thinkReplyer/README_thinkReplyer.md
+          mv ./thinkReplyer ./runtimes
+
+      - name: Test
+        working-directory: ./thonk-kun
+        run: | 
+          if ! diff -qr --speed-large-files ./ ../thonk-kun.backup >/dev/null 2>&1; then
+            echo "Folder differences found."
+            npm install
+            npm test
+          else
+            echo "Folder contents are the same."
+          fi
+
+      - name: Commit
+      working-directory: ./
+        run: | 
+          if ! diff -qr --speed-large-files ./thonk-kun ./thonk-kun.backup >/dev/null 2>&1; then
+            echo "Folder differences found."
+            rm -rf ./thonk-kun.backup
+            cp -R ./thonk-kun ./
+            rm -rf ./thonk-kun
+
+            ls
+          else
+            echo "Folder contents are the same."
+          fi
