@@ -18,10 +18,10 @@ jobs:
       - name: Copy myself
         working-directory: ./
         run: |
-          mkdir ./thonk-kun.new
-          cp -R ./* ./thonk-kun.new/
-          mkdir ./thonk-kun.backup
-          cp -R ./* ./thonk-kun.backup/
+          mkdir -p thonk-kun.new
+          cp -R ./* thonk-kun.new/
+          mkdir -p thonk-kun.backup
+          cp -R ./* thonk-kun.backup/
       - name: Clean myself
         working-directory: ./thonk-kun.new/thinkerAI
         run: |
