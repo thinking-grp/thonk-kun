@@ -104,7 +104,7 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
-          if ! diff -qab ./thonk-kun.new ./thonk-kun.backup >/dev/null 2>&1; then
+          if ! diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null; then
             echo "Folder contents are the same."
           else
             echo "Folder contents are different. Files changed:"
