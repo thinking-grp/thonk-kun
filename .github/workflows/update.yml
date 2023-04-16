@@ -90,6 +90,8 @@ jobs:
           # Rename final.json to package.json
           mv -f final.json package.json
 
+          rm -f ./thinkerAI/package.json
+          
           npm install
           
       - name: Copy thinkerAI
