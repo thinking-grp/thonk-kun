@@ -104,12 +104,13 @@ jobs:
       - name: Commit
         working-directory: ./
         run: |
+          rm -rf ./thonk-kun.backup
+          cp -R ./thonk-kun.new/* ./
+          rm -rf ./thonk-kun.new
+          
           if ! diff -qr --speed-large-files ./thonk-kun.new ./thonk-kun.backup >/dev/null
           2>&1; then
             echo "Folder differences found."
-            rm -rf ./thonk-kun.backup
-            cp -R ./thonk-kun.new/* ./
-            rm -rf ./thonk-kun.new
 
             git add .
             git commit -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
