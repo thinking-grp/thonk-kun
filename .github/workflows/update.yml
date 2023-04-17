@@ -73,6 +73,7 @@ jobs:
           rm -f ./install-darwin-x64.sh
           rm -f ./install-win32-x64.bat
           rm -f ./LICENSE
+          rm -f ./requirements.txt
           mv README.md README_thinkerAI.md
 
       - name: Merge package.json
