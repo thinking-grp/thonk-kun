@@ -3,6 +3,6 @@
 
 thonk-kun is a chat bot by thinking-grp.
 
-## Program used
+## Programs used
 - [thinkerAI](https://github.com/thinking-grp/thinkerAI/)
 - [thinkReplyer](https://github.com/thinking-grp/thinkReplyer/)
