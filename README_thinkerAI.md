@@ -23,7 +23,7 @@ We release a development version roughly every week.
 
 |Date|Contents|
 |----|--------|
-|March 2023|Distribution of installers|
+|April 2023|Release v1.0.0 beta version|
 |July 2023|Release v1.0.0 Release Candidate version|
 |August 2023|Release v1.0.0 stable version|
 |December 2023|Release development editor|
