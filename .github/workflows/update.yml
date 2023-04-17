@@ -152,7 +152,7 @@ jobs:
             rm -rf ./thonk-kun.new
 
             git add .
-            git commit -q -m "🎉 thinkerAIとthinkReplyerを更新しました！" -a
+            git commit -q -m "🎉 thinkerAIとthinkReplyer、またはパッケージを更新しました！" -a
             git push origin HEAD:main
           else
             echo "Folder contents are the same."
