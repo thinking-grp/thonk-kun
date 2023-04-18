@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "start": "ts-node .",
     "test": "jest"
   },
   "author": "mf7cli <mf7cli120@icloud.com> (https://github.com/mf-3d)",
