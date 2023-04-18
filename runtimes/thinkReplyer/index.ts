@@ -2,6 +2,7 @@ import * as tokenManager from "./lib/token";
 import * as syntaxManager from "./lib/syntax";
 import * as replySyntaxManager from "./lib/reply_syntax";
 import * as knowledgeManager from "./lib/knowledge";
+import * as generator from "./lib/generate";
 
 export async function train(trainingData: any, options: any) {
   if (!Array.isArray(trainingData)) {
@@ -92,4 +93,16 @@ export async function train(trainingData: any, options: any) {
       knowledgeManager.addKnowledgeToDatabase(knowledge2);
     }
   }
+}
+
+export async function interact(text: string, history: string, options: {
+  canTrain: boolean;
+} = {
+  canTrain: false
+}): Promise<string> {
+  const result = await generator.generateReply(text, {
+    allowTrain: true
+  });
+
+  return tokenManager.convertTokensToString(result);
 }
