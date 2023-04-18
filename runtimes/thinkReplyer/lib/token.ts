@@ -1,6 +1,6 @@
 import * as kuromoji from "kuromoji";
 import * as database from "./database";
-
+import * as negaposi from "./negaposi.js";
 
 export async function tokenize(text: string): Promise<kuromoji.IpadicFeatures[]> {
   let result = new Promise<kuromoji.IpadicFeatures[]>((resolve) => {
@@ -75,6 +75,20 @@ export function getToken(kuromojiToken: kuromoji.IpadicFeatures[], pos: string =
   return result;
 }
 
+export function getDuplicationTokensFromDatabase(token: database.Token): database.Token[] {
+  const dict: database.TokenDic = database.getTokenDic();
+  let result: database.Token[] = [];
+
+  dict.forEach((word) => {
+    if (!word) return;
+    if (typeof word !== "object") return;
+
+    if (token.text === word.text && token.pos === word.pos && token.pos_detail_1 === word.pos_detail_1) result[result.length] = word;
+  });
+
+  return result;
+}
+
 export function getTokenByWord(tokens: kuromoji.IpadicFeatures[] | database.Token[], text: string): database.Token[] {
   if (!implementsTokens(tokens)) tokens = convertKuromojiToToken(tokens);
 
@@ -94,7 +108,9 @@ export function getTokenByWord(tokens: kuromoji.IpadicFeatures[] | database.Toke
 export function implementsTokens(arg: any): arg is database.Token[] {
   return arg !== null &&
     typeof arg === "object" &&
-    typeof arg[0].text === "string"
+    typeof arg[0].id === "string" &&
+    typeof arg[0].text === "string" &&
+    typeof arg[0].pos === "string"
 }
 
 export function implementsToken(arg: any): arg is database.Token {
@@ -126,7 +142,7 @@ export function replaceTokensByPos(token: kuromoji.IpadicFeatures[] | database.T
         token.forEach((word, i) => {
           if (!word) return;
           if (typeof word !== "object") return;
-    
+
           if (word.pos === pos) {
             token[i].pos = replace;
           }
@@ -149,7 +165,7 @@ export function replaceTokensByPos(token: kuromoji.IpadicFeatures[] | database.T
       token.forEach((word, i) => {
         if (!word) return;
         if (typeof word !== "object") return;
-  
+
         if (word.pos === pos) {
           token[i].pos = replace;
         }
@@ -176,11 +192,38 @@ export function hideTokensByPos(token: database.Token[], pos: string = "名詞")
     if (typeof word !== "object") return;
 
     if (word.pos === pos) {
-      token[i].id = "tkn-unknown";
+      token[i].pos_detail_3 += "／置換可能";
     }
   });
 
   return token;
+}
+
+export function replaceTokenOfDatabaseById(tokenId: string, token: database.Token) {
+  const dict: database.TokenDic = database.getTokenDic();
+
+  dict.forEach((word, i) => {
+    if (!word) return;
+    if (typeof word !== "object") return;
+    if (word.id !== tokenId) return;
+
+    dict[i] = token;
+  });
+
+  database.setTokenDic(dict);
+}
+
+export async function replaceWithExistingTokens(tokens: database.Token[]) {
+  tokens.forEach((word, i) => {
+    if (!word) return;
+    if (typeof word !== "object") return;
+
+    const duplicationToken = getDuplicationTokensFromDatabase(word);
+
+    if (duplicationToken.length !== 0) tokens[i] = duplicationToken[0];
+  });
+
+  return tokens;
 }
 
 export function addTokenToDatabase(token: database.Token) {
@@ -195,18 +238,28 @@ export function addTokensToDatabase(tokens: database.Token[]) {
   let dict: database.TokenDic = database.getTokenDic();
 
   tokens.forEach((token) => {
+    const duplicationToken = getDuplicationTokensFromDatabase(token);
+
+    if (duplicationToken.length >= 1) return;
+
     dict[dict.length] = token;
   });
 
   database.setTokenDic(dict);
 }
 
-export function convertKuromojiToToken(token: kuromoji.IpadicFeatures[] | database.Token[]): database.Token[] {
-  if (implementsTokens(token)) return token;
+export function convertKuromojiToToken(tokens: kuromoji.IpadicFeatures[] | database.Token[], tokensNegaposi?: number): database.Token[] {
+  if (implementsTokens(tokens)) return tokens;
 
   let result: database.Token[] = [];
 
-  token.forEach((word) => {
+  tokens.forEach((word) => {
+    let tokenNegaposi: number | undefined;
+
+    if (typeof tokensNegaposi === "number") {
+      tokenNegaposi = tokensNegaposi / tokens.length;
+    }
+
     let databaseToken: database.Token = {
       id: `tkn-${database.generateId()}`,
       text: word.surface_form,
@@ -218,63 +271,14 @@ export function convertKuromojiToToken(token: kuromoji.IpadicFeatures[] | databa
       conjugated_form: word.conjugated_form,
       basic_form: word.basic_form,
       group: [],
-      raw_data: word
+      raw_data: word,
+      negaposi: tokenNegaposi
     };
 
     result[result.length] = databaseToken;
   });
 
   return result;
-}
-
-export function createTokenGroup(tokenGroup: database.TokenGroup) {
-  let dict: database.TokenGroupDic = database.getTokenGroupDic();
-
-  dict[dict.length] = tokenGroup;
-
-  dict.forEach((group, index) => {
-    if (!group) return;
-    if (typeof group !== "object") return;
-
-    if (group.id === tokenGroup.id) {
-      dict = dict.splice(index, 1);
-      dict[dict.length] = tokenGroup;
-    }
-  });
-
-  database.setTokenGroupDic(dict);
-}
-
-export class TokenGroup {
-  private tokenGroup: database.TokenGroup;
-
-  constructor(tokenGroup: database.TokenGroup) {
-    this.tokenGroup = tokenGroup;
-  }
-
-  addToken(token: database.Token) {
-    this.tokenGroup.tokensId[this.tokenGroup.tokensId.length] = token.id;
-  }
-
-  removeToken(token: database.Token) {
-    this.tokenGroup.tokensId.splice(this.tokenGroup.tokensId.indexOf(token.id), 1);
-  }
-
-  saveTokenGroup() {
-    let dict = database.getTokenGroupDic();
-
-    dict.forEach((group, index) => {
-      if (!group) return;
-      if (typeof group !== "object") return;
-
-      if (group.id === this.tokenGroup.id) {
-        dict = dict.splice(index, 1);
-        dict[dict.length] = this.tokenGroup;
-      }
-    });
-
-    database.setTokenGroupDic(dict);
-  }
 }
 
 export function convertTokensToString(tokens: database.Token[]): string {
@@ -287,8 +291,18 @@ export function convertTokensToString(tokens: database.Token[]): string {
   return result;
 }
 
+export function convertTokensIdToTokens(tokensId: string[]): database.Token[] {
+  let result: database.Token[] = [];
+
+  for (let i = 0; i < tokensId.length; i++) {
+    result[result.length] = getTokensByIdFromDatabase(tokensId[i]);
+  }
+
+  return result;
+}
+
 export function generateUnkToken(base: database.Token = unkToken): database.Token {
-  base.id = "tkn-unknown";
+  base.pos_detail_3 += "／置換可能";
   return base;
 }
 
@@ -306,3 +320,5 @@ export const unkToken: database.Token = {
   raw_data: {},
   negaposi: 0
 };
+
+export const getTokensNegaposi = negaposi.getTokensNegaposi;

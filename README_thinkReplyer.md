@@ -1,4 +1,11 @@
-# thinkReplyer
+<img src="./assets/logo/logo_and_text.png" width="500"/>
+
+<div>
+  <a href="LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/badge/license-MIT-blue.svg">
+  </a>
+</div>
+
 thinkReplyer is a pseudo AI model for [thinkerAI](https://github.com/thinking-grp/thinkerAI) developed by thinking-grp.
 
 ## Requirements
