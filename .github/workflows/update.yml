@@ -116,8 +116,7 @@ jobs:
       - name: Copy thinkReplyer
         working-directory: ./thonk-kun.new
         run: |
-          rm -rf ./thinkReplyer/.git 
-          mv ./thinkReplyer/README.md ./README_thinkReplyer.md
+          rm -rf ./thinkReplyer/.git
           mkdir -p ./runtimes
           mkdir -p ./runtimes/thinkReplyer/
           cp -ra ./thinkReplyer/* ./runtimes/thinkReplyer/
