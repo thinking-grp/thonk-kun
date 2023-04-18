@@ -11,12 +11,12 @@
   "author": "mf7cli <mf7cli120@icloud.com> (https://github.com/mf-3d)",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^14.5.0",
     "dotenv": "^16.0.3",
     "jsonc-parser": "^3.2.0",
     "node-schedule": "^2.1.1",
     "python-shell": "^5.0.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "discord.js": "^14.5.0"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
