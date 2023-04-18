@@ -75,6 +75,7 @@ jobs:
           rm -f ./LICENSE
           rm -f ./requirements.txt
           rm -f ./runtimes/python.zip
+          rm -f ./tsconfig.json
           mv README.md README_thinkerAI.md
 
       - name: Merge package.json
