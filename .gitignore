@@ -22,3 +22,4 @@ python/test/
 assets/model_outputs/**/*
 !assets/model_outputs/README.md
 
+src/config.json
