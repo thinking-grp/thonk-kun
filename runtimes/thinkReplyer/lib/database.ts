@@ -84,7 +84,7 @@ export function getTokenGroupDic(): TokenGroupDic {
 
 export type TokenGroup = {
   id: string;
-  tokensId: string[][];
+  tokenIds: string[][];
   negaposi: number;
 };
 

@@ -425,7 +425,7 @@ export function getSimillarTokens(token: database.Token): database.Token[] {
   dict.forEach((tokenGroup) => {
     if (isSimillarMeanTokenGroup(tokenGroup.id, token)) {
       let tokens: database.Token[] = [];
-      tokenGroup.tokensId.forEach((tokensId) => {
+      tokenGroup.tokenIds.forEach((tokensId) => {
         tokensId.forEach((tokenId) => {
           tokens[tokens.length] = tokenManager.getTokensByIdFromDatabase(tokenId);
         });
@@ -442,7 +442,7 @@ export function isSimillarMeanTokenGroup(tokenGroupId: string, token: database.T
   const tokenGroup = tokenGroupManager.getTokenGroupById(tokenGroupId)[0];
 
   let probabilityOfSimillar: number = 0;
-  tokenGroup.tokensId.forEach((tokensId) => {
+  tokenGroup.tokenIds.forEach((tokensId) => {
     tokensId.forEach((tokenId) => {
       const dbToken = tokenManager.getTokensByIdFromDatabase(tokenId);
 

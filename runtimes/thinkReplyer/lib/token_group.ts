@@ -4,7 +4,7 @@ import * as tokenManager from "./token";
 export function createTokenGroup(tokensId: string[][], negaposi: number): database.TokenGroup {
   return {
     id: `tng-${database.generateId()}`,
-    tokensId,
+    tokenIds: tokensId,
     negaposi
   };
 }
@@ -41,7 +41,7 @@ export function addWhatTokens(tokenId: string, negaposi: number) {
 
     const tokenGroup: database.TokenGroup = {
       id: "tng-what",
-      tokensId: [ [tokenId] ],
+      tokenIds: [ [tokenId] ],
       negaposi: negaposi
     };
 
@@ -50,18 +50,18 @@ export function addWhatTokens(tokenId: string, negaposi: number) {
     return;
   }
 
-  for (let index = 0; index < tokenGroups[0].tokensId.length; index++) {
-    for (let i = 0; i < tokenGroups[0].tokensId[index].length; i++) {
-      const dbTokenId = tokenGroups[0].tokensId[index][i];
+  for (let index = 0; index < tokenGroups[0].tokenIds.length; index++) {
+    for (let i = 0; i < tokenGroups[0].tokenIds[index].length; i++) {
+      const dbTokenId = tokenGroups[0].tokenIds[index][i];
 
       if (dbTokenId === tokenId) return;
       if (tokenManager.getTokensByIdFromDatabase(dbTokenId).text === token.text) return;
     }
   }
 
-  tokenGroups[0].tokensId[tokenGroups[0].tokensId.length] = [];
+  tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length] = [];
 
-  tokenGroups[0].tokensId[tokenGroups[0].tokensId.length - 1][tokenGroups[0].tokensId[tokenGroups[0].tokensId.length - 1].length] = tokenId;
+  tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length - 1][tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length - 1].length] = tokenId;
 
   editTokenGroupById("tng-what", tokenGroups[0]);
 }
@@ -72,7 +72,7 @@ export function isWhatToken(token: database.Token): boolean {
   let result: string[] = [];
 
   if (dict[0]) {
-    dict[0].tokensId.forEach((tokensId) => {
+    dict[0].tokenIds.forEach((tokensId) => {
     
       tokensId.forEach((tokenId) => {
         const databaseToken = tokenManager.getTokensByIdFromDatabase(tokenId);
@@ -105,7 +105,7 @@ export function includesInTokenGroup(tokenGroupId: string, token: database.Token
   for (let i = 0; i < tokenGroups.length; i++) {
     const tokenGroup = tokenGroups[i];
     
-    return tokenGroup.tokensId[tokenGroup.tokensId.length].includes(token.id);
+    return tokenGroup.tokenIds[tokenGroup.tokenIds.length].includes(token.id);
   }
 
   return false;
