@@ -4,7 +4,7 @@ const database = require("./database.ts");
 const kuromoji = require("kuromoji");
 
 /**
- * @param { database.Token[] | kuromoji.IpadicFeatures[] } tokens 
+ * @param { database.Token[] | kuromoji.IpadicFeatures[] } tokens
  * @returns { number }
  */
 function getTokensNegaposi(tokens) {
@@ -22,5 +22,5 @@ function getTokensNegaposi(tokens) {
 }
 
 module.exports = {
-  getTokensNegaposi
-}
+  getTokensNegaposi,
+};

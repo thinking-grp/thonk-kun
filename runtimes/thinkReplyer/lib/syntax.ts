@@ -6,16 +6,22 @@ import * as knowledgeManager from "./knowledge";
 
 export const sentenceSplitSymbol: string[] = ["。", "！", "？", "!", "?", "."];
 
-export function splitSentence(tokens: kuromoji.IpadicFeatures[] | database.Token[]): database.Token[][] {
-  let convertedTokens: database.Token[] = tokenManager.convertKuromojiToToken(tokens);
-  let result: database.Token[][] = [convertedTokens];
+export function splitSentence(
+  tokens: kuromoji.IpadicFeatures[] | database.Token[]
+): database.Token[][] {
+  const convertedTokens: database.Token[] =
+    tokenManager.convertKuromojiToToken(tokens);
+  const result: database.Token[][] = [convertedTokens];
 
   for (let i = 0; i < convertedTokens.length; i++) {
     if (!convertedTokens[i + 1]) continue;
 
     let probabilityOfSeparation = 0;
 
-    if (convertedTokens[i].pos_detail_1.includes("句点") && convertedTokens[i].text === "。") {
+    if (
+      convertedTokens[i].pos_detail_1.includes("句点") &&
+      convertedTokens[i].text === "。"
+    ) {
       probabilityOfSeparation += 1;
     }
 
@@ -28,11 +34,23 @@ export function splitSentence(tokens: kuromoji.IpadicFeatures[] | database.Token
         probabilityOfSeparation += 0.8;
       }
 
-      if (convertedTokens[i].pos === "記号" && sentenceSplitSymbol.some(str => convertedTokens[i].text.includes(str)) && convertedTokens[i - 1].pos_detail_1.includes("終助詞")) {
+      if (
+        convertedTokens[i].pos === "記号" &&
+        sentenceSplitSymbol.some((str) =>
+          convertedTokens[i].text.includes(str)
+        ) &&
+        convertedTokens[i - 1].pos_detail_1.includes("終助詞")
+      ) {
         probabilityOfSeparation += 0.8;
       }
 
-      if (convertedTokens[i].pos === "記号" && sentenceSplitSymbol.some(str => convertedTokens[i].text.includes(str)) && convertedTokens[i - 1].pos === "助動詞") {
+      if (
+        convertedTokens[i].pos === "記号" &&
+        sentenceSplitSymbol.some((str) =>
+          convertedTokens[i].text.includes(str)
+        ) &&
+        convertedTokens[i - 1].pos === "助動詞"
+      ) {
         probabilityOfSeparation += 0.5;
       }
     }
@@ -51,10 +69,13 @@ export function splitSentence(tokens: kuromoji.IpadicFeatures[] | database.Token
 }
 
 export function isQuestion(syntax: database.Syntax): boolean {
-  let result: number = 0;
+  let result = 0;
   syntax.tokens.forEach((token, i) => {
     if (token.pos_detail_1.includes("終助詞") && syntax.tokens[i + 1]) {
-      if (syntax.tokens[i + 1].pos !== "名詞" || syntax.tokens[i + 1].pos !== "形容詞") {
+      if (
+        syntax.tokens[i + 1].pos !== "名詞" ||
+        syntax.tokens[i + 1].pos !== "形容詞"
+      ) {
         result += 0.2;
       }
     }
@@ -73,11 +94,13 @@ export function isQuestion(syntax: database.Syntax): boolean {
   return result > 0;
 }
 
-export function createSyntaxMean(syntax: database.Syntax): database.SyntaxMean[] {
+export function createSyntaxMean(
+  syntax: database.Syntax
+): database.SyntaxMean[] {
   const filteredSyntax = cleanSyntax(syntax);
 
-  let knowledge = knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
-  let result: database.Syntax = { ...syntax };
+  const knowledge = knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
+  const result: database.Syntax = { ...syntax };
 
   result.tokens = [];
 
@@ -86,7 +109,7 @@ export function createSyntaxMean(syntax: database.Syntax): database.SyntaxMean[]
 
     result.mean[0] = {
       is: [],
-      isQuestion: isQuestion(syntax)
+      isQuestion: isQuestion(syntax),
     };
   }
 
@@ -102,7 +125,7 @@ export function createSyntaxMean(syntax: database.Syntax): database.SyntaxMean[]
 
   if (!result.mean[0].question) {
     result.mean[0].question = {
-      type: "confirm"
+      type: "confirm",
     };
   }
   if (type === "x-is-y") {
@@ -117,7 +140,7 @@ export function createSyntaxMean(syntax: database.Syntax): database.SyntaxMean[]
 }
 
 export function addSyntaxToDatabase(tokens: database.Syntax) {
-  let dict: database.SyntaxDic = database.getSyntaxDic();
+  const dict: database.SyntaxDic = database.getSyntaxDic();
 
   dict[dict.length] = tokens;
 
@@ -125,9 +148,9 @@ export function addSyntaxToDatabase(tokens: database.Syntax) {
 }
 
 export function isPositive(tokens: database.Token[]): boolean {
-  let negativeOrPositive: number = 0;
+  let negativeOrPositive = 0;
 
-  tokens.forEach((token, i) => {
+  tokens.forEach((token) => {
     if (token.text === "はい" && token.pos === "感動詞") {
       negativeOrPositive += 1;
     }
@@ -144,18 +167,29 @@ export function isPositive(tokens: database.Token[]): boolean {
       negativeOrPositive -= 1;
     }
 
-    if (token.basic_form === "そう" && token.pos === "副詞" && token.pos_detail_1 === "助詞類接続") {
+    if (
+      token.basic_form === "そう" &&
+      token.pos === "副詞" &&
+      token.pos_detail_1 === "助詞類接続"
+    ) {
       negativeOrPositive += 1;
     }
   });
   return negativeOrPositive >= 1;
 }
 
+// export function isImperative(syntax: database.Syntax): boolean {
+//   const probabilityOfImperative = 0;
+
+//   syntax.tokens.forEach((token) => {});
+
+//   return probabilityOfImperative > 0;
+// }
+
 export function generateFromRandomSyntax(): database.Token[] {
   const dict: database.SyntaxDic = database.getSyntaxDic();
-  let result: database.Syntax;
-
-  result = dict[Math.floor(Math.random() * ((dict.length - 1) - 0) + 0)];
+  const result: database.Syntax =
+    dict[Math.floor(Math.random() * (dict.length - 1 - 0) + 0)];
 
   result.tokens.forEach((word, i) => {
     if (!word) return;
@@ -166,7 +200,7 @@ export function generateFromRandomSyntax(): database.Token[] {
 
       const dict: database.TokenDic = database.getTokenDic();
 
-      let eachResult: database.Token[] = [];
+      const eachResult: database.Token[] = [];
 
       dict.forEach((word) => {
         if (!word) return;
@@ -174,18 +208,46 @@ export function generateFromRandomSyntax(): database.Token[] {
         if (word.pos !== result.tokens[i].pos) return;
         if (word.conjugated_form !== result.tokens[i].conjugated_form) return;
         if (word.conjugated_type !== result.tokens[i].conjugated_type) return;
-        if (word.pos_detail_1.includes("代名詞") === !result.tokens[i].pos_detail_1.includes("代名詞")) return;
-        if (word.pos_detail_1.includes("接尾") === !result.tokens[i].pos_detail_1.includes("接尾")) return;
-        if (word.pos_detail_1.includes("数") === !result.tokens[i].pos_detail_1.includes("数")) return;
-        if (word.pos_detail_1.includes("非自立") === !result.tokens[i].pos_detail_1.includes("非自立")) return;
-        if (/^[0-9]+$/.test(word.text) === !/^[0-9]+$/.test(result.tokens[i].text)) return;
-        if (/^[１２３４５６７８９０]+$/.test(word.text) === !/^[１２３４５６７８９０]+$/.test(result.tokens[i].text)) return;
-        if (/^[一二三四五六七八九〇十百千万億兆]+$/.test(word.text) === !/^[一二三四五六七八九〇十百千万億兆]+$/.test(result.tokens[i].text)) return;
+        if (
+          word.pos_detail_1.includes("代名詞") ===
+          !result.tokens[i].pos_detail_1.includes("代名詞")
+        )
+          return;
+        if (
+          word.pos_detail_1.includes("接尾") ===
+          !result.tokens[i].pos_detail_1.includes("接尾")
+        )
+          return;
+        if (
+          word.pos_detail_1.includes("数") ===
+          !result.tokens[i].pos_detail_1.includes("数")
+        )
+          return;
+        if (
+          word.pos_detail_1.includes("非自立") ===
+          !result.tokens[i].pos_detail_1.includes("非自立")
+        )
+          return;
+        if (
+          /^[0-9]+$/.test(word.text) === !/^[0-9]+$/.test(result.tokens[i].text)
+        )
+          return;
+        if (
+          /^[１２３４５６７８９０]+$/.test(word.text) ===
+          !/^[１２３４５６７８９０]+$/.test(result.tokens[i].text)
+        )
+          return;
+        if (
+          /^[一二三四五六七八九〇十百千万億兆]+$/.test(word.text) ===
+          !/^[一二三四五六七八九〇十百千万億兆]+$/.test(result.tokens[i].text)
+        )
+          return;
 
         eachResult[eachResult.length] = word;
       });
 
-      result.tokens[i] = eachResult[Math.floor(Math.random() * ((eachResult.length - 1) - 0) + 0)];
+      result.tokens[i] =
+        eachResult[Math.floor(Math.random() * (eachResult.length - 1 - 0) + 0)];
     }
   });
 
@@ -193,7 +255,7 @@ export function generateFromRandomSyntax(): database.Token[] {
 }
 
 export function createSyntax(tokens: database.Token[]): database.Syntax {
-  let result = tokenManager.hideTokensByPos(tokens, "名詞");
+  const result = tokenManager.hideTokensByPos(tokens, "名詞");
 
   if (!tokenManager.implementsTokens(result)) throw new Error("aa");
 
@@ -218,25 +280,28 @@ export function createSyntax(tokens: database.Token[]): database.Syntax {
   return {
     id: `syn-${database.generateId()}`,
     tokens: result,
-    negaposi: tokenManager.getTokensNegaposi(result)
+    negaposi: tokenManager.getTokensNegaposi(result),
   };
 }
 
-export function getDuplicationSyntaxsFromDatabase(syntax: database.Syntax): database.Syntax[] {
+export function getDuplicationSyntaxsFromDatabase(
+  syntax: database.Syntax
+): database.Syntax[] {
   const dict: database.SyntaxDic = database.getSyntaxDic();
-  let result: database.Syntax[] = [];
+  const result: database.Syntax[] = [];
 
   dict.forEach((dictSyntax) => {
     if (!syntax) return;
     if (typeof syntax !== "object") return;
 
-    if (JSON.stringify(dictSyntax.tokens) === JSON.stringify(syntax.tokens)) result[result.length] = dictSyntax;
+    if (JSON.stringify(dictSyntax.tokens) === JSON.stringify(syntax.tokens))
+      result[result.length] = dictSyntax;
   });
 
   return result;
 }
 
-export async function replaceWithExistingSyntax(syntax: database.Syntax) {
+export function replaceWithExistingSyntax(syntax: database.Syntax) {
   const duplicationSyntax = getDuplicationSyntaxsFromDatabase(syntax);
 
   if (duplicationSyntax.length !== 0) syntax = duplicationSyntax[0];
@@ -245,62 +310,58 @@ export async function replaceWithExistingSyntax(syntax: database.Syntax) {
 }
 
 export function cleanSyntax(syntax: database.Syntax): database.Syntax {
-  let result: database.Syntax = {
+  const result: database.Syntax = {
     id: syntax.id,
     tokens: [],
-    negaposi: syntax.negaposi
+    negaposi: syntax.negaposi,
   };
 
   syntax.tokens.forEach((token) => {
-    if (token.pos_detail_1 !== "空白") result.tokens[result.tokens.length] = token;
+    if (token.pos_detail_1 !== "空白")
+      result.tokens[result.tokens.length] = token;
   });
 
   return result;
 }
 
-export function cleanSyntaxForTwoTokensKnowledgeType(type: database.TwoTokensTypeKnowledgeTypes, syntax: database.Syntax): database.Syntax {
-  let result: database.Syntax = { ...syntax };
+export function cleanSyntaxForTwoTokensKnowledgeType(
+  type: database.TwoTokensTypeKnowledgeTypes,
+  syntax: database.Syntax
+): database.Syntax {
+  const result: database.Syntax = { ...syntax };
   result.tokens = [];
 
   if (type === "x-is-y") {
     syntax.tokens.forEach((token, i) => {
       if (
-        (
-          (
-            token.pos === "助詞" ||
-            token.pos_detail_1.includes("係助詞") ||
-            token.pos_detail_2.includes("連語")
-          ) || 
-          token.text === "is"
-        ) &&
-        (
-          syntax.tokens[i - 1] &&
-          (
-            syntax.tokens[i - 1].pos === "名詞" ||
-            syntax.tokens[i - 1].pos === "形容詞"
-          ) &&
-          syntax.tokens[i + 1] &&
-          (
-            syntax.tokens[i + 1].pos === "名詞" ||
-            syntax.tokens[i + 1].pos === "形容詞"
-          )
-        )
+        (token.pos === "助詞" ||
+          token.pos_detail_1.includes("係助詞") ||
+          token.pos_detail_2.includes("連語") ||
+          token.text === "is") &&
+        syntax.tokens[i - 1] &&
+        (syntax.tokens[i - 1].pos === "名詞" ||
+          syntax.tokens[i - 1].pos === "形容詞") &&
+        syntax.tokens[i + 1] &&
+        (syntax.tokens[i + 1].pos === "名詞" ||
+          syntax.tokens[i + 1].pos === "形容詞")
       ) {
-        let tempTokens = [];
-        for (let index = i - 1; index >= 0 ; index--){
+        const tempTokens = [];
+        for (let index = i - 1; index >= 0; index--) {
           const token = syntax.tokens[index];
-          
-          if (token.pos === "名詞" || token.pos === "形容詞") tempTokens[tempTokens.length] = token;
+
+          if (token.pos === "名詞" || token.pos === "形容詞")
+            tempTokens[tempTokens.length] = token;
         }
-  
+
         result.tokens.push(...tempTokens.reverse());
-  
+
         result.tokens[result.tokens.length] = syntax.tokens[i];
-  
+
         for (let index = i + 1; index < syntax.tokens.length; index++) {
           const token = syntax.tokens[index];
-          
-          if (token.pos === "名詞" || token.pos === "形容詞") result.tokens[result.tokens.length] = token;
+
+          if (token.pos === "名詞" || token.pos === "形容詞")
+            result.tokens[result.tokens.length] = token;
         }
       }
     });
@@ -308,54 +369,38 @@ export function cleanSyntaxForTwoTokensKnowledgeType(type: database.TwoTokensTyp
     syntax.tokens.forEach((token, i) => {
       if (
         token.pos === "助詞" &&
-        (
-          (
-            token.pos_detail_1.includes("係助詞") ||
-            token.pos_detail_2.includes("連語")
-          ) &&
-          (
-            token.basic_form === "は" ||
-            token.basic_form === "も" ||
-            token.basic_form === "って"
-          )
-        ) &&
-        (
-          (
-            syntax.tokens[i - 1] &&
-            (
-              syntax.tokens[i - 1].pos === "名詞" ||
-              syntax.tokens[i - 1].pos === "形容詞"
-            )
-          ) ||
-          syntax.tokens[i + 1] &&
-          (
+        (token.pos_detail_1.includes("係助詞") ||
+          token.pos_detail_2.includes("連語")) &&
+        (token.basic_form === "は" ||
+          token.basic_form === "も" ||
+          token.basic_form === "って") &&
+        ((syntax.tokens[i - 1] &&
+          (syntax.tokens[i - 1].pos === "名詞" ||
+            syntax.tokens[i - 1].pos === "形容詞")) ||
+          (syntax.tokens[i + 1] &&
             syntax.tokens[i + 1].pos_detail_1.includes("係助詞") &&
             syntax.tokens[i + 1].pos_detail_2.includes("連語") &&
-            (
-              syntax.tokens[i + 1].basic_form === "は" ||
+            (syntax.tokens[i + 1].basic_form === "は" ||
               syntax.tokens[i + 1].basic_form === "が" ||
-              syntax.tokens[i + 1].basic_form === "も"
-            )
-          ) &&
-          syntax.tokens[i + 2] &&
-          (
+              syntax.tokens[i + 1].basic_form === "も") &&
+            syntax.tokens[i + 2] &&
             syntax.tokens[i + 2].pos === "動詞" &&
-            syntax.tokens[i + 2].basic_form === "できる"
-          )
-        )
+            syntax.tokens[i + 2].basic_form === "できる"))
       ) {
-        let tempTokens = [];
-        for (let index = i - 1; index >= 0 ; index--){
+        const tempTokens = [];
+        for (let index = i - 1; index >= 0; index--) {
           const token = syntax.tokens[index];
-          
-          if (token.pos === "名詞" || token.pos === "形容詞") tempTokens[tempTokens.length] = token;
+
+          if (token.pos === "名詞" || token.pos === "形容詞")
+            tempTokens[tempTokens.length] = token;
         }
-  
+
         result.tokens.push(...tempTokens.reverse());
-  
+
         result.tokens[result.tokens.length] = syntax.tokens[i];
-        
-        if (syntax.tokens[i + 1]) result.tokens[result.tokens.length] = syntax.tokens[i + 1];
+
+        if (syntax.tokens[i + 1])
+          result.tokens[result.tokens.length] = syntax.tokens[i + 1];
       }
     });
   }
@@ -363,9 +408,11 @@ export function cleanSyntaxForTwoTokensKnowledgeType(type: database.TwoTokensTyp
   return result;
 }
 
-export function getSyntaxByQuestionType(type: database.QuestionType): database.Syntax[] {
+export function getSyntaxByQuestionType(
+  type: database.QuestionType
+): database.Syntax[] {
   const dict = database.getSyntaxDic();
-  let result: database.Syntax[] = [];
+  const result: database.Syntax[] = [];
   dict.forEach((syntax) => {
     if (syntax.mean && syntax.mean[0].question?.type === type) {
       result[result.length] = syntax;
@@ -376,30 +423,33 @@ export function getSyntaxByQuestionType(type: database.QuestionType): database.S
 }
 
 export function getSyntaxRequirementPos(syntax: database.Syntax): string[] {
-  let result: string[] = [];
+  const result: string[] = [];
   syntax.tokens.forEach((token) => {
-    if (token.pos_detail_1.includes("／置換可能")) result[result.length] = token.pos;
+    if (token.pos_detail_1.includes("／置換可能"))
+      result[result.length] = token.pos;
   });
 
   return result;
 }
 
-export function getUsableSyntaxs(replaceTokens: database.Token[][]): database.Syntax[] {
+export function getUsableSyntaxs(
+  replaceTokens: database.Token[][]
+): database.Syntax[] {
   const dict: database.SyntaxDic = database.getSyntaxDic();
 
-  let result: database.Syntax[] = [];
+  const result: database.Syntax[] = [];
 
   dict.forEach((syntax) => {
     const syntaxRequirements: string[] = getSyntaxRequirementPos(syntax);
 
-    let syntaxResult: boolean[] = [];
-    let donedReplaceToken: number = 0;
+    const syntaxResult: boolean[] = [];
+    let donedReplaceToken = 0;
 
     syntaxRequirements.forEach((requirement) => {
       replaceTokens.forEach((tokens) => {
         for (let i = donedReplaceToken; i < tokens.length; i++) {
           const token = tokens[i];
-          
+
           if (token.pos === requirement) {
             donedReplaceToken = i;
             syntaxResult[syntaxResult.length] = true;
@@ -409,7 +459,7 @@ export function getUsableSyntaxs(replaceTokens: database.Token[][]): database.Sy
           }
         }
       });
-  
+
       if (!syntaxResult.includes(false)) result[result.length] = syntax;
     });
   });
@@ -418,16 +468,17 @@ export function getUsableSyntaxs(replaceTokens: database.Token[][]): database.Sy
 }
 
 export function getSimillarTokens(token: database.Token): database.Token[] {
-  let dict: database.TokenGroupDic = database.getTokenGroupDic();
+  const dict: database.TokenGroupDic = database.getTokenGroupDic();
 
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   dict.forEach((tokenGroup) => {
     if (isSimillarMeanTokenGroup(tokenGroup.id, token)) {
-      let tokens: database.Token[] = [];
+      const tokens: database.Token[] = [];
       tokenGroup.tokenIds.forEach((tokensId) => {
         tokensId.forEach((tokenId) => {
-          tokens[tokens.length] = tokenManager.getTokensByIdFromDatabase(tokenId);
+          tokens[tokens.length] =
+            tokenManager.getTokensByIdFromDatabase(tokenId);
         });
       });
 
@@ -438,38 +489,54 @@ export function getSimillarTokens(token: database.Token): database.Token[] {
   return result;
 }
 
-export function isSimillarMeanTokenGroup(tokenGroupId: string, token: database.Token): boolean {
+export function isSimillarMeanTokenGroup(
+  tokenGroupId: string,
+  token: database.Token
+): boolean {
   const tokenGroup = tokenGroupManager.getTokenGroupById(tokenGroupId)[0];
 
-  let probabilityOfSimillar: number = 0;
+  let probabilityOfSimillar = 0;
   tokenGroup.tokenIds.forEach((tokensId) => {
     tokensId.forEach((tokenId) => {
       const dbToken = tokenManager.getTokensByIdFromDatabase(tokenId);
 
-    const dbTokenKnowledges = knowledgeManager.getKnowledgeFromDatabase("x-is-y", [ dbToken ]);
-    
-    if (dbTokenKnowledges.length !== 0) {
-      const tokenKnowledges = knowledgeManager.getKnowledgeFromDatabase("x-is-y", [ token ]);
+      const dbTokenKnowledges = knowledgeManager.getKnowledgeFromDatabase(
+        "x-is-y",
+        [dbToken]
+      );
 
-      dbTokenKnowledges.forEach((dbTokenKnowledge) => {
-        tokenKnowledges.forEach((tokenKnowledge) => {
-          if (dbTokenKnowledge.type === "x-is-y" && tokenKnowledge.type === "x-is-y" && dbTokenKnowledge.is && tokenKnowledge.is) {
-            if (dbTokenKnowledge.is[0][1] && tokenKnowledge.is[0][1]) probabilityOfSimillar += 1;
-            
-            if (dbTokenKnowledge.is) {
-              dbTokenKnowledge.is[0][1].forEach((dbKnowledgeToken) => {
-                if (tokenKnowledge.is) {
-                  tokenKnowledge.is[0][1].forEach((knowledgeToken) => {
-                    if (dbKnowledgeToken.text === knowledgeToken.text) probabilityOfSimillar += 0.01;
-                    else probabilityOfSimillar -= 0.0075;
-                  });
-                }
-              });
+      if (dbTokenKnowledges.length !== 0) {
+        const tokenKnowledges = knowledgeManager.getKnowledgeFromDatabase(
+          "x-is-y",
+          [token]
+        );
+
+        dbTokenKnowledges.forEach((dbTokenKnowledge) => {
+          tokenKnowledges.forEach((tokenKnowledge) => {
+            if (
+              dbTokenKnowledge.type === "x-is-y" &&
+              tokenKnowledge.type === "x-is-y" &&
+              dbTokenKnowledge.is &&
+              tokenKnowledge.is
+            ) {
+              if (dbTokenKnowledge.is[0][1] && tokenKnowledge.is[0][1])
+                probabilityOfSimillar += 1;
+
+              if (dbTokenKnowledge.is) {
+                dbTokenKnowledge.is[0][1].forEach((dbKnowledgeToken) => {
+                  if (tokenKnowledge.is) {
+                    tokenKnowledge.is[0][1].forEach((knowledgeToken) => {
+                      if (dbKnowledgeToken.text === knowledgeToken.text)
+                        probabilityOfSimillar += 0.01;
+                      else probabilityOfSimillar -= 0.0075;
+                    });
+                  }
+                });
+              }
             }
-          }
+          });
         });
-      });
-    }
+      }
     });
   });
 

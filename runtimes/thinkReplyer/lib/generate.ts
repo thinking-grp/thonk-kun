@@ -7,123 +7,221 @@ export type GenerateOptions = {
   allowTrain: boolean;
 };
 
-export async function generateReply(text: string, options: GenerateOptions = {
-  allowTrain: false
-}): Promise<database.Token[]> {
+export async function generateReply(
+  text: string,
+  options: GenerateOptions = {
+    allowTrain: false,
+  }
+): Promise<database.Token[]> {
   let result: database.Token[] = [];
   const replyTokens = await tokenManager.tokenize(text);
-  
+
   const tokens2Negaposi = tokenManager.getTokensNegaposi(replyTokens);
 
-  const convertedReplyTokens = tokenManager.convertKuromojiToToken(replyTokens, tokens2Negaposi);
+  const convertedReplyTokens = tokenManager.convertKuromojiToToken(
+    replyTokens,
+    tokens2Negaposi
+  );
 
-  let filteredReplyTokens = await tokenManager.replaceWithExistingTokens(convertedReplyTokens);
+  const filteredReplyTokens =
+    tokenManager.replaceWithExistingTokens(convertedReplyTokens);
 
-  let replySyntax = syntaxManager.createSyntax(filteredReplyTokens);
+  const replySyntax = syntaxManager.createSyntax(filteredReplyTokens);
 
-  if (!replySyntax.mean) replySyntax.mean = syntaxManager.createSyntaxMean(replySyntax);
+  if (!replySyntax.mean)
+    replySyntax.mean = syntaxManager.createSyntaxMean(replySyntax);
 
-  if (!replySyntax.mean[0]) throw new Error;
+  if (!replySyntax.mean[0]) throw new Error();
 
   if (options.allowTrain) {
     tokenManager.addTokensToDatabase(filteredReplyTokens);
 
-    if (syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length === 0) {
+    if (
+      syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length === 0
+    ) {
       syntaxManager.addSyntaxToDatabase(replySyntax);
     }
   }
 
   if (replySyntax.mean[0].isQuestion) {
     if (replySyntax.mean[0].question) {
-      if (replySyntax.mean[0].question.type === "x-is-y" && replySyntax.mean[0].is) {
+      if (
+        replySyntax.mean[0].question.type === "x-is-y" &&
+        replySyntax.mean[0].is
+      ) {
         if (!replySyntax.mean[0].is[0]) {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、文章を理解できませんでした...。"));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize(
+              "ごめんなさい、文章を理解できませんでした...。"
+            )
+          );
 
           result = tokens;
         } else {
-          const knowledges = knowledgeManager.getKnowledgeFromDatabase(replySyntax.mean[0].question.type, replySyntax.mean[0].is[0][0]);
+          const knowledges = knowledgeManager.getKnowledgeFromDatabase(
+            replySyntax.mean[0].question.type,
+            replySyntax.mean[0].is[0][0]
+          );
 
           if (knowledges.length === 0) {
-            const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
-  
+            const tokens = tokenManager.convertKuromojiToToken(
+              await tokenManager.tokenize(
+                "ごめんなさい、私にはわかりません...。"
+              )
+            );
+
             result = tokens;
           } else if (knowledges[0].type !== "x-is-y" || !knowledges[0].is) {
-            const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
-  
+            const tokens = tokenManager.convertKuromojiToToken(
+              await tokenManager.tokenize(
+                "ごめんなさい、私にはわかりません...。"
+              )
+            );
+
             result = tokens;
           } else {
-            const knowledgeTokens = [knowledges[0].is[0][0], knowledges[0].is[0][1]];
-  
+            const knowledgeTokens = [
+              knowledges[0].is[0][0],
+              knowledges[0].is[0][1],
+            ];
+
             let tokens: database.Token[];
-            
-            if (tokenManager.convertTokensToString(knowledgeTokens[0]) === "あなた") {
-              tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize(`私は${tokenManager.convertTokensToString(knowledgeTokens[1])}です。`));
+
+            if (
+              tokenManager.convertTokensToString(knowledgeTokens[0]) ===
+              "あなた"
+            ) {
+              tokens = tokenManager.convertKuromojiToToken(
+                await tokenManager.tokenize(
+                  `私は${tokenManager.convertTokensToString(
+                    knowledgeTokens[1]
+                  )}です。`
+                )
+              );
             } else {
-              tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize(`${tokenManager.convertTokensToString(knowledgeTokens[0])}は${tokenManager.convertTokensToString(knowledges[0].is[0][1])}です。`));
+              tokens = tokenManager.convertKuromojiToToken(
+                await tokenManager.tokenize(
+                  `${tokenManager.convertTokensToString(
+                    knowledgeTokens[0]
+                  )}は${tokenManager.convertTokensToString(
+                    knowledges[0].is[0][1]
+                  )}です。`
+                )
+              );
             }
-  
+
             result = tokens;
           }
         }
-      } else if (replySyntax.mean[0].question.type === "x-isnt-y" && replySyntax.mean[0].is) {
-        const knowledges = knowledgeManager.getKnowledgeFromDatabase(replySyntax.mean[0].question.type, replySyntax.mean[0].is[0][0]);
+      } else if (
+        replySyntax.mean[0].question.type === "x-isnt-y" &&
+        replySyntax.mean[0].is
+      ) {
+        const knowledges = knowledgeManager.getKnowledgeFromDatabase(
+          replySyntax.mean[0].question.type,
+          replySyntax.mean[0].is[0][0]
+        );
 
         if (knowledges.length === 0) {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
+          );
 
           result = tokens;
         } else if (knowledges[0].type !== "x-isnt-y" || !knowledges[0].is) {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
+          );
 
           result = tokens;
         } else {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize(`${tokenManager.convertTokensToString(knowledges[0].is[0][0])}は${tokenManager.convertTokensToString(knowledges[0].is[0][1])}です。`));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize(
+              `${tokenManager.convertTokensToString(
+                knowledges[0].is[0][0]
+              )}は${tokenManager.convertTokensToString(
+                knowledges[0].is[0][1]
+              )}です。`
+            )
+          );
 
           result = tokens;
         }
-      } else if (replySyntax.mean[0].question.type === "x-can-y" && replySyntax.mean[0].can) {
-        const knowledges = knowledgeManager.getKnowledgeFromDatabase(replySyntax.mean[0].question.type, replySyntax.mean[0].can[0].what);
+      } else if (
+        replySyntax.mean[0].question.type === "x-can-y" &&
+        replySyntax.mean[0].can
+      ) {
+        const knowledges = knowledgeManager.getKnowledgeFromDatabase(
+          replySyntax.mean[0].question.type,
+          replySyntax.mean[0].can[0].what
+        );
 
         if (knowledges.length === 0) {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
+          );
 
           result = tokens;
         } else if (knowledges[0].type !== "x-can-y" || !knowledges[0].can) {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
+          );
 
           result = tokens;
         } else {
-          const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize(`${tokenManager.convertTokensToString(knowledges[0].can[0].what)}はできません。`));
+          const tokens = tokenManager.convertKuromojiToToken(
+            await tokenManager.tokenize(
+              `${tokenManager.convertTokensToString(
+                knowledges[0].can[0].what
+              )}はできません。`
+            )
+          );
 
           result = tokens;
         }
       } else {
-        const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("ごめんなさい、私にはわかりません...。"));
+        const tokens = tokenManager.convertKuromojiToToken(
+          await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
+        );
 
         result = tokens;
       }
     }
   } else {
     if (options.allowTrain) {
-      if (syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length === 0) {
+      if (
+        syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length ===
+        0
+      ) {
         replySyntax.mean = syntaxManager.createSyntaxMean(replySyntax);
-    
+
         syntaxManager.addSyntaxToDatabase(replySyntax);
       }
 
-      const filteredSyntax = syntaxManager.cleanSyntaxForTwoTokensKnowledgeType("x-is-y", replySyntax);
+      const filteredSyntax = syntaxManager.cleanSyntaxForTwoTokensKnowledgeType(
+        "x-is-y",
+        replySyntax
+      );
 
-      if (knowledgeManager.isTwoTokensKnowledge(filteredSyntax) && !syntaxManager.isQuestion(filteredSyntax)) {
-        const knowledge = knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
-  
+      if (
+        knowledgeManager.isTwoTokensKnowledge(filteredSyntax) &&
+        !syntaxManager.isQuestion(filteredSyntax)
+      ) {
+        const knowledge =
+          knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
+
         knowledgeManager.addKnowledgeToDatabase(knowledge);
       }
 
-      const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("そうなんですね。覚えました。"));
+      const tokens = tokenManager.convertKuromojiToToken(
+        await tokenManager.tokenize("そうなんですね。覚えました。")
+      );
 
       result = tokens;
     } else {
-      const tokens = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("そうなんですね。教えてくれてありがとう。"));
+      const tokens = tokenManager.convertKuromojiToToken(
+        await tokenManager.tokenize("そうなんですね。教えてくれてありがとう。")
+      );
 
       result = tokens;
     }

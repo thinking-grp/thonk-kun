@@ -2,8 +2,10 @@ import * as kuromoji from "kuromoji";
 import * as database from "./database";
 import * as negaposi from "./negaposi.js";
 
-export async function tokenize(text: string): Promise<kuromoji.IpadicFeatures[]> {
-  let result = new Promise<kuromoji.IpadicFeatures[]>((resolve) => {
+export async function tokenize(
+  text: string
+): Promise<kuromoji.IpadicFeatures[]> {
+  const result = new Promise<kuromoji.IpadicFeatures[]>((resolve) => {
     kuromoji
       .builder({
         dicPath: `${__dirname}/../node_modules/kuromoji/dict`,
@@ -17,7 +19,7 @@ export async function tokenize(text: string): Promise<kuromoji.IpadicFeatures[]>
 
 export function getTokensByIdFromDatabase(id: string): database.Token {
   const dict: database.TokenDic = database.getTokenDic();
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   dict.forEach((word) => {
     if (!word) return;
@@ -32,7 +34,7 @@ export function getTokensByIdFromDatabase(id: string): database.Token {
 
 export function getTokensByPosFromDatabase(pos: string): database.Token[] {
   const dict: database.TokenDic = database.getTokenDic();
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   dict.forEach((word) => {
     if (!word) return;
@@ -47,7 +49,7 @@ export function getTokensByPosFromDatabase(pos: string): database.Token[] {
 
 export function getTokenByPosFromDatabase(pos: string): database.Token {
   const dict: database.TokenDic = database.getTokenDic();
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   dict.forEach((word) => {
     if (!word) return;
@@ -57,12 +59,15 @@ export function getTokenByPosFromDatabase(pos: string): database.Token {
     result[result.length] = word;
   });
 
-  console.log(pos, result.length)
-  return result[Math.floor(Math.random() * ((result.length - 1) - 0) + 0)];
+  console.log(pos, result.length);
+  return result[Math.floor(Math.random() * (result.length - 1 - 0) + 0)];
 }
 
-export function getToken(kuromojiToken: kuromoji.IpadicFeatures[], pos: string = "名詞"): kuromoji.IpadicFeatures[] {
-  let result: kuromoji.IpadicFeatures[] = [];
+export function getToken(
+  kuromojiToken: kuromoji.IpadicFeatures[],
+  pos = "名詞"
+): kuromoji.IpadicFeatures[] {
+  const result: kuromoji.IpadicFeatures[] = [];
 
   kuromojiToken.forEach((word) => {
     if (!word) return;
@@ -75,30 +80,36 @@ export function getToken(kuromojiToken: kuromoji.IpadicFeatures[], pos: string =
   return result;
 }
 
-export function getDuplicationTokensFromDatabase(token: database.Token): database.Token[] {
+export function getDuplicationTokensFromDatabase(
+  token: database.Token
+): database.Token[] {
   const dict: database.TokenDic = database.getTokenDic();
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   dict.forEach((word) => {
     if (!word) return;
     if (typeof word !== "object") return;
 
-    let token2 = { ...token };
-    let word2 = { ...word };
+    const token2 = { ...token };
+    const word2 = { ...word };
 
     token2.id = "";
     word2.id = "";
 
-    if (token2.text === word2.text && token2.pos === word2.pos) result[result.length] = word;
+    if (token2.text === word2.text && token2.pos === word2.pos)
+      result[result.length] = word;
   });
 
   return result;
 }
 
-export function getTokenByWord(tokens: kuromoji.IpadicFeatures[] | database.Token[], text: string): database.Token[] {
+export function getTokenByWord(
+  tokens: kuromoji.IpadicFeatures[] | database.Token[],
+  text: string
+): database.Token[] {
   if (!implementsTokens(tokens)) tokens = convertKuromojiToToken(tokens);
 
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   tokens.forEach((word) => {
     if (!word) return;
@@ -112,21 +123,26 @@ export function getTokenByWord(tokens: kuromoji.IpadicFeatures[] | database.Toke
 }
 
 export function implementsTokens(arg: any): arg is database.Token[] {
-  return arg !== null &&
-    typeof arg === "object" &&
+  return (
+    arg !== null &&
+    Array.isArray(arg) &&
     typeof arg[0].id === "string" &&
     typeof arg[0].text === "string" &&
     typeof arg[0].pos === "string"
+  );
 }
 
 export function implementsToken(arg: any): arg is database.Token {
-  return arg !== null &&
-    typeof arg === "object" &&
-    typeof arg.text === "string"
+  return (
+    arg !== null && typeof arg === "object" && typeof arg.text === "string"
+  );
 }
 
-export function excludeTokenWithPos(token: kuromoji.IpadicFeatures[] | database.Token[], pos: string = "名詞"): kuromoji.IpadicFeatures[] | database.Token[] {
-  let result: kuromoji.IpadicFeatures[] | database.Token[] = [];
+export function excludeTokenWithPos(
+  token: kuromoji.IpadicFeatures[] | database.Token[],
+  pos = "名詞"
+): kuromoji.IpadicFeatures[] | database.Token[] {
+  const result: kuromoji.IpadicFeatures[] | database.Token[] = [];
 
   token.forEach((word, i) => {
     if (!word) return;
@@ -141,7 +157,11 @@ export function excludeTokenWithPos(token: kuromoji.IpadicFeatures[] | database.
   return result;
 }
 
-export function replaceTokensByPos(token: kuromoji.IpadicFeatures[] | database.Token[], replace: kuromoji.IpadicFeatures | database.Token | string, pos: string = "名詞"): kuromoji.IpadicFeatures[] | database.Token[] {
+export function replaceTokensByPos(
+  token: kuromoji.IpadicFeatures[] | database.Token[],
+  replace: kuromoji.IpadicFeatures | database.Token | string,
+  pos = "名詞"
+): kuromoji.IpadicFeatures[] | database.Token[] {
   if (implementsTokens(token)) {
     if (implementsToken(replace)) {
       if (typeof replace === "string") {
@@ -191,8 +211,10 @@ export function replaceTokensByPos(token: kuromoji.IpadicFeatures[] | database.T
   return token;
 }
 
-
-export function hideTokensByPos(token: database.Token[], pos: string = "名詞"): database.Token[] {
+export function hideTokensByPos(
+  token: database.Token[],
+  pos = "名詞"
+): database.Token[] {
   token.forEach((word, i) => {
     if (!word) return;
     if (typeof word !== "object") return;
@@ -205,7 +227,10 @@ export function hideTokensByPos(token: database.Token[], pos: string = "名詞")
   return token;
 }
 
-export function replaceTokenOfDatabaseById(tokenId: string, token: database.Token) {
+export function replaceTokenOfDatabaseById(
+  tokenId: string,
+  token: database.Token
+) {
   const dict: database.TokenDic = database.getTokenDic();
 
   dict.forEach((word, i) => {
@@ -219,7 +244,7 @@ export function replaceTokenOfDatabaseById(tokenId: string, token: database.Toke
   database.setTokenDic(dict);
 }
 
-export async function replaceWithExistingTokens(tokens: database.Token[]) {
+export function replaceWithExistingTokens(tokens: database.Token[]) {
   tokens.forEach((word, i) => {
     if (!word) return;
     if (typeof word !== "object") return;
@@ -234,7 +259,7 @@ export async function replaceWithExistingTokens(tokens: database.Token[]) {
 
 export function addTokenToDatabase(token: database.Token) {
   if (getDuplicationTokensFromDatabase(token).length !== 0) return;
-  let dict: database.TokenDic = database.getTokenDic();
+  const dict: database.TokenDic = database.getTokenDic();
 
   dict[dict.length] = token;
 
@@ -242,7 +267,7 @@ export function addTokenToDatabase(token: database.Token) {
 }
 
 export function addTokensToDatabase(tokens: database.Token[]) {
-  let dict: database.TokenDic = database.getTokenDic();
+  const dict: database.TokenDic = database.getTokenDic();
 
   tokens.forEach((token) => {
     const duplicationToken = getDuplicationTokensFromDatabase(token);
@@ -255,10 +280,13 @@ export function addTokensToDatabase(tokens: database.Token[]) {
   database.setTokenDic(dict);
 }
 
-export function convertKuromojiToToken(tokens: kuromoji.IpadicFeatures[] | database.Token[], tokensNegaposi?: number): database.Token[] {
+export function convertKuromojiToToken(
+  tokens: kuromoji.IpadicFeatures[] | database.Token[],
+  tokensNegaposi?: number
+): database.Token[] {
   if (implementsTokens(tokens)) return tokens;
 
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   tokens.forEach((word) => {
     let tokenNegaposi: number | undefined;
@@ -267,7 +295,7 @@ export function convertKuromojiToToken(tokens: kuromoji.IpadicFeatures[] | datab
       tokenNegaposi = tokensNegaposi / tokens.length;
     }
 
-    let databaseToken: database.Token = {
+    const databaseToken: database.Token = {
       id: `tkn-${database.generateId()}`,
       text: word.surface_form,
       pos: word.pos,
@@ -279,7 +307,7 @@ export function convertKuromojiToToken(tokens: kuromoji.IpadicFeatures[] | datab
       basic_form: word.basic_form,
       group: [],
       raw_data: word,
-      negaposi: tokenNegaposi
+      negaposi: tokenNegaposi,
     };
 
     result[result.length] = databaseToken;
@@ -299,7 +327,7 @@ export function convertTokensToString(tokens: database.Token[]): string {
 }
 
 export function convertTokensIdToTokens(tokensId: string[]): database.Token[] {
-  let result: database.Token[] = [];
+  const result: database.Token[] = [];
 
   for (let i = 0; i < tokensId.length; i++) {
     result[result.length] = getTokensByIdFromDatabase(tokensId[i]);
@@ -308,7 +336,9 @@ export function convertTokensIdToTokens(tokensId: string[]): database.Token[] {
   return result;
 }
 
-export function generateUnkToken(base: database.Token = unkToken): database.Token {
+export function generateUnkToken(
+  base: database.Token = unkToken
+): database.Token {
   base.pos_detail_3 += "／置換可能";
   return base;
 }
@@ -325,7 +355,7 @@ export const unkToken: database.Token = {
   basic_form: "*",
   group: [],
   raw_data: {},
-  negaposi: 0
+  negaposi: 0,
 };
 
 export const getTokensNegaposi = negaposi.getTokensNegaposi;

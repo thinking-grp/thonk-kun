@@ -2,9 +2,11 @@ import * as tokenManager from "./token";
 import * as database from "./database";
 import * as syntaxManager from "./syntax";
 
-export async function createMean(meaningString: string): Promise<database.TokenMean> {
-  let result: database.TokenMean = {
-    usage: []
+export async function createMean(
+  meaningString: string
+): Promise<database.TokenMean> {
+  const result: database.TokenMean = {
+    usage: [],
   };
 
   const meaning = await tokenManager.tokenize(meaningString);
@@ -19,7 +21,7 @@ export async function createMean(meaningString: string): Promise<database.TokenM
 }
 
 export function addMeanToDatabase(tokenId: string, mean: database.TokenMean) {
-  let token = tokenManager.getTokensByIdFromDatabase(tokenId);
+  const token = tokenManager.getTokensByIdFromDatabase(tokenId);
 
   token.mean = mean;
 
