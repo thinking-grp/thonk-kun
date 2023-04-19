@@ -6,7 +6,7 @@ export function whichOfTwoTokensKnowledgeTypes(syntax: database.Syntax): databas
 
   syntax.tokens.forEach((token, i) => {
     // ○○"は"○○です・○○"は"○○にあります
-    if (syntax.tokens[i - 1] && syntax.tokens[i - 1].pos === "名詞" && (token.pos_detail_1.includes("係助詞") && token.text === "は") || token.text === "is" || token.text === "って") {
+    if (syntax.tokens[i - 1] && syntax.tokens[i - 1].pos === "名詞" && (token.pos_detail_1.includes("係助詞") && token.basic_form === "は") || token.text === "is" || token.text === "って") {
       for (let index = i; index < syntax.tokens.length; index++) {
         // ○○は"○○"です・○○は"○○"にあります
         if (syntax.tokens[index].pos === "名詞") {
@@ -65,12 +65,19 @@ export function createXIsYTypeKnowledge(syntax: database.Syntax): database.Is[] 
 
   syntax.tokens.forEach((token, i) => {
     if (
-      token.pos === "助詞" &&
       (
-        token.pos_detail_1.includes("係助詞") ||
-        token.pos_detail_2.includes("連語") ||
-        token.basic_form === "は" ||
-        token.basic_form === "も"
+        (
+          token.pos === "助詞" ||
+          (
+            token.pos_detail_1.includes("係助詞") ||
+            token.pos_detail_2.includes("連語")
+          ) &&
+          (
+            token.basic_form === "は" ||
+            token.basic_form === "も"
+          )
+        ) || 
+        token.text === "is"
       ) &&
       (
         syntax.tokens[i - 1] &&

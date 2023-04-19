@@ -1,5 +1,6 @@
 import * as kuromoji from "kuromoji";
 import * as tokenManager from "./token";
+import * as tokenGroupManager from "./token_group";
 import * as database from "./database";
 import * as knowledgeManager from "./knowledge";
 
@@ -58,6 +59,10 @@ export function isQuestion(syntax: database.Syntax): boolean {
       }
     }
 
+    if (tokenGroupManager.isWhatToken(token)) {
+      result += 0.3;
+    }
+
     if (token.text === "?" || token.text === "？") {
       if (syntax.tokens[i - 1]) {
         result += 1;
@@ -69,7 +74,9 @@ export function isQuestion(syntax: database.Syntax): boolean {
 }
 
 export function createSyntaxMean(syntax: database.Syntax): database.SyntaxMean[] {
-  let knowledge = knowledgeManager.createTwoTokensKnowledge(syntax);
+  const filteredSyntax = cleanSyntax(syntax);
+
+  let knowledge = knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
   let result: database.Syntax = { ...syntax };
 
   result.tokens = [];
@@ -237,6 +244,20 @@ export async function replaceWithExistingSyntax(syntax: database.Syntax) {
   return syntax;
 }
 
+export function cleanSyntax(syntax: database.Syntax): database.Syntax {
+  let result: database.Syntax = {
+    id: syntax.id,
+    tokens: [],
+    negaposi: syntax.negaposi
+  };
+
+  syntax.tokens.forEach((token) => {
+    if (token.pos_detail_1 !== "空白") result.tokens[result.tokens.length] = token;
+  });
+
+  return result;
+}
+
 export function cleanSyntaxForTwoTokensKnowledgeType(type: database.TwoTokensTypeKnowledgeTypes, syntax: database.Syntax): database.Syntax {
   let result: database.Syntax = { ...syntax };
   result.tokens = [];
@@ -244,10 +265,13 @@ export function cleanSyntaxForTwoTokensKnowledgeType(type: database.TwoTokensTyp
   if (type === "x-is-y") {
     syntax.tokens.forEach((token, i) => {
       if (
-        token.pos === "助詞" &&
         (
-          token.pos_detail_1.includes("係助詞") ||
-          token.pos_detail_2.includes("連語")
+          (
+            token.pos === "助詞" ||
+            token.pos_detail_1.includes("係助詞") ||
+            token.pos_detail_2.includes("連語")
+          ) || 
+          token.text === "is"
         ) &&
         (
           syntax.tokens[i - 1] &&
@@ -349,4 +373,105 @@ export function getSyntaxByQuestionType(type: database.QuestionType): database.S
   });
 
   return result;
+}
+
+export function getSyntaxRequirementPos(syntax: database.Syntax): string[] {
+  let result: string[] = [];
+  syntax.tokens.forEach((token) => {
+    if (token.pos_detail_1.includes("／置換可能")) result[result.length] = token.pos;
+  });
+
+  return result;
+}
+
+export function getUsableSyntaxs(replaceTokens: database.Token[][]): database.Syntax[] {
+  const dict: database.SyntaxDic = database.getSyntaxDic();
+
+  let result: database.Syntax[] = [];
+
+  dict.forEach((syntax) => {
+    const syntaxRequirements: string[] = getSyntaxRequirementPos(syntax);
+
+    let syntaxResult: boolean[] = [];
+    let donedReplaceToken: number = 0;
+
+    syntaxRequirements.forEach((requirement) => {
+      replaceTokens.forEach((tokens) => {
+        for (let i = donedReplaceToken; i < tokens.length; i++) {
+          const token = tokens[i];
+          
+          if (token.pos === requirement) {
+            donedReplaceToken = i;
+            syntaxResult[syntaxResult.length] = true;
+            return;
+          } else if (i === tokens.length - 1) {
+            syntaxResult[syntaxResult.length] = false;
+          }
+        }
+      });
+  
+      if (!syntaxResult.includes(false)) result[result.length] = syntax;
+    });
+  });
+
+  return result;
+}
+
+export function getSimillarTokens(token: database.Token): database.Token[] {
+  let dict: database.TokenGroupDic = database.getTokenGroupDic();
+
+  let result: database.Token[] = [];
+
+  dict.forEach((tokenGroup) => {
+    if (isSimillarMeanTokenGroup(tokenGroup.id, token)) {
+      let tokens: database.Token[] = [];
+      tokenGroup.tokensId.forEach((tokensId) => {
+        tokensId.forEach((tokenId) => {
+          tokens[tokens.length] = tokenManager.getTokensByIdFromDatabase(tokenId);
+        });
+      });
+
+      result.push(...tokens);
+    }
+  });
+
+  return result;
+}
+
+export function isSimillarMeanTokenGroup(tokenGroupId: string, token: database.Token): boolean {
+  const tokenGroup = tokenGroupManager.getTokenGroupById(tokenGroupId)[0];
+
+  let probabilityOfSimillar: number = 0;
+  tokenGroup.tokensId.forEach((tokensId) => {
+    tokensId.forEach((tokenId) => {
+      const dbToken = tokenManager.getTokensByIdFromDatabase(tokenId);
+
+    const dbTokenKnowledges = knowledgeManager.getKnowledgeFromDatabase("x-is-y", [ dbToken ]);
+    
+    if (dbTokenKnowledges.length !== 0) {
+      const tokenKnowledges = knowledgeManager.getKnowledgeFromDatabase("x-is-y", [ token ]);
+
+      dbTokenKnowledges.forEach((dbTokenKnowledge) => {
+        tokenKnowledges.forEach((tokenKnowledge) => {
+          if (dbTokenKnowledge.type === "x-is-y" && tokenKnowledge.type === "x-is-y" && dbTokenKnowledge.is && tokenKnowledge.is) {
+            if (dbTokenKnowledge.is[0][1] && tokenKnowledge.is[0][1]) probabilityOfSimillar += 1;
+            
+            if (dbTokenKnowledge.is) {
+              dbTokenKnowledge.is[0][1].forEach((dbKnowledgeToken) => {
+                if (tokenKnowledge.is) {
+                  tokenKnowledge.is[0][1].forEach((knowledgeToken) => {
+                    if (dbKnowledgeToken.text === knowledgeToken.text) probabilityOfSimillar += 0.01;
+                    else probabilityOfSimillar -= 0.0075;
+                  });
+                }
+              });
+            }
+          }
+        });
+      });
+    }
+    });
+  });
+
+  return probabilityOfSimillar > 0;
 }

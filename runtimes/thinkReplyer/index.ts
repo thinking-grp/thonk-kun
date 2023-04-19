@@ -52,29 +52,41 @@ export async function train(trainingData: any, options: any) {
 
   const filteredTokens2 = await tokenManager.replaceWithExistingTokens(convertedTokens2);
 
+  const splitedTokens = syntaxManager.splitSentence(filteredTokens);
+
+  const splitedTokens2 = syntaxManager.splitSentence(filteredTokens2);
+
   const syntax = syntaxManager.createSyntax(filteredTokens);
-  
+
   const syntax2 = syntaxManager.createSyntax(filteredTokens2);
 
-  if (syntaxManager.getDuplicationSyntaxsFromDatabase(syntax).length === 0) {
-    syntax.mean = syntaxManager.createSyntaxMean(syntax);
+  splitedTokens.forEach((tokens) => {
+    const syntax = syntaxManager.createSyntax(tokens);
 
-    syntaxManager.addSyntaxToDatabase(syntax);
+    if (syntaxManager.getDuplicationSyntaxsFromDatabase(syntax).length === 0) {
+      syntax.mean = syntaxManager.createSyntaxMean(syntax);
+  
+      syntaxManager.addSyntaxToDatabase(syntax);
+  
+      if (!syntax.mean) return;
+    } else {
+      return;
+    }
+  });
+  
+  splitedTokens2.forEach((tokens) => {
+    const syntax = syntaxManager.createSyntax(tokens);
 
-    if (!syntax.mean) return;
-  } else {
-    return;
-  }
-
-  if (syntaxManager.getDuplicationSyntaxsFromDatabase(syntax2).length === 0) {
-    syntax2.mean = syntaxManager.createSyntaxMean(syntax2);
-
-    syntaxManager.addSyntaxToDatabase(syntax2);
-
-    if (!syntax2.mean) return;
-  } else {
-    return;
-  }
+    if (syntaxManager.getDuplicationSyntaxsFromDatabase(syntax).length === 0) {
+      syntax.mean = syntaxManager.createSyntaxMean(syntax);
+  
+      syntaxManager.addSyntaxToDatabase(syntax);
+  
+      if (!syntax.mean) return;
+    } else {
+      return;
+    }
+  });
 
   if (syntaxManager.getDuplicationSyntaxsFromDatabase(syntax).length === 1 && syntaxManager.getDuplicationSyntaxsFromDatabase(syntax2).length === 1) {
     const replySyntax = replySyntaxManager.createReplySyntax([syntax, syntax2]);

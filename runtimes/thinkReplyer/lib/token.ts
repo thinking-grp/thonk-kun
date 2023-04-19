@@ -83,7 +83,13 @@ export function getDuplicationTokensFromDatabase(token: database.Token): databas
     if (!word) return;
     if (typeof word !== "object") return;
 
-    if (token.text === word.text && token.pos === word.pos && token.pos_detail_1 === word.pos_detail_1) result[result.length] = word;
+    let token2 = { ...token };
+    let word2 = { ...word };
+
+    token2.id = "";
+    word2.id = "";
+
+    if (token2.text === word2.text && token2.pos === word2.pos) result[result.length] = word;
   });
 
   return result;
@@ -227,6 +233,7 @@ export async function replaceWithExistingTokens(tokens: database.Token[]) {
 }
 
 export function addTokenToDatabase(token: database.Token) {
+  if (getDuplicationTokensFromDatabase(token).length !== 0) return;
   let dict: database.TokenDic = database.getTokenDic();
 
   dict[dict.length] = token;
