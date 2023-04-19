@@ -25,6 +25,12 @@ const db = {
     json[path] = data;
 
     fs.writeFileSync(`${__dirname}/config.json`, JSON.stringify(json));
+  },
+  delete(path) {
+    let json = JSON.parse(fs.readFileSync(`${__dirname}/config.json`, { encoding: "utf-8" }));
+    delete json[path];
+
+    fs.writeFileSync(`${__dirname}/config.json`, JSON.stringify(json));
   }
 }
 
