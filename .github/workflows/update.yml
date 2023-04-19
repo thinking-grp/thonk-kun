@@ -131,6 +131,9 @@ jobs:
           then
             echo "Folder differences found."
             npm install
+            cd runtimes/thinkReplyer
+            npm install
+            cd ../../
             npm test
           else
             echo "Folder contents are the same."
