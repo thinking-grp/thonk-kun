@@ -85,9 +85,11 @@ client.on("interactionCreate", async (interaction) => {
     }
     
     if (interaction.options.getSubcommand() === "channel") {
-      if (!interaction.member?.permissions.has(PermissionsBitField.Flags.Administrator)) {
-        interaction.reply("必要な権限がありません。");
-        return;
+      if (interaction.member.id !== process.env.DISCORD_BOT_ADMIN) {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+          interaction.reply("必要な権限がありません。");
+          return;
+        }
       }
         
       
