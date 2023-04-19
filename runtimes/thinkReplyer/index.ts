@@ -126,7 +126,7 @@ export async function train(trainingData: any, options: any) {
 
 export async function interact(
   text: string,
-  history: string,
+  history: string[] = [],
   options: {
     canTrain: boolean;
   } = {

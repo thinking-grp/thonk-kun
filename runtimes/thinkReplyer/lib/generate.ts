@@ -13,6 +13,14 @@ export async function generateReply(
     allowTrain: false,
   }
 ): Promise<database.Token[]> {
+  if (text.startsWith("/##-")) {
+    let result: database.Token[] = [];
+
+    if (text.slice(4) === "ping") result = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("Pong!"));
+
+    return result;
+  }
+
   let result: database.Token[] = [];
   const replyTokens = await tokenManager.tokenize(text);
 

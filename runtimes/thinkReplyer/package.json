@@ -4,7 +4,7 @@
   "description": "thinkReplyer is a pseudo AI model for thinkerAI developed by thinking-grp.",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "eslint": "npx eslint --ext .ts .",
     "eslint:fix": "npx eslint --fix --ext .ts .",
     "check-types": "tsc --noEmit",
