@@ -113,6 +113,7 @@ jobs:
           repository: thinking-grp/thinkReplyer
           path: ./thonk-kun.new/thinkReplyer
           ssh-key: ${{ secrets.THINKREPLYER_SSH_KEY }}
+          ref: refs/heads/develop
 
       - name: Copy thinkReplyer
         working-directory: ./thonk-kun.new
