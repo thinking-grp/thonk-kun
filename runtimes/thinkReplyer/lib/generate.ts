@@ -206,7 +206,7 @@ export async function generateReply(
     }
   } else if (replySyntax.mean[0].isImperative) {
     const tokens = tokenManager.convertKuromojisToTokens(
-      await tokenManager.tokenize("ごめんなさい、私はできません...。")
+      await tokenManager.tokenize("ごめんなさい、私にはできません...。")
     );
 
     result = tokens;
