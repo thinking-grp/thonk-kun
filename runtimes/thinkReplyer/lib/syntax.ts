@@ -73,10 +73,7 @@ export function isQuestion(tokens: database.Token[]): boolean {
   tokens.forEach((token, i) => {
     if (token.pos_detail_1.includes("終助詞") && tokens[i + 1]) {
       if (
-        (
-          tokens[i + 1].pos !== "名詞" ||
-          tokens[i + 1].pos !== "形容詞"
-        ) &&
+        (tokens[i + 1].pos !== "名詞" || tokens[i + 1].pos !== "形容詞") &&
         !tokens[i + 1].pos_detail_1.includes("終助詞")
       ) {
         result += 0.2;
@@ -113,7 +110,7 @@ export function createSyntaxMean(
     result.mean[0] = {
       is: [],
       isQuestion: isQuestion(syntax.tokens),
-      isImperative: isImperative(syntax.tokens)
+      isImperative: isImperative(syntax.tokens),
     };
   }
 
@@ -123,6 +120,10 @@ export function createSyntaxMean(
 
   if (knowledge.is) {
     result.mean[0].is = knowledge.is;
+  }
+
+  if (knowledge.or) {
+    result.mean[0].or = knowledge.or;
   }
 
   const type = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -137,6 +138,8 @@ export function createSyntaxMean(
   } else if (type === "x-isnt-y") {
     result.mean[0].question.type = type;
   } else if (type === "x-can-y") {
+    result.mean[0].question.type = type;
+  } else if (type === "x-or-y") {
     result.mean[0].question.type = type;
   }
 
@@ -186,14 +189,30 @@ export function isImperative(tokens: database.Token[]): boolean {
   let probabilityOfImperative = 0;
 
   tokens.forEach((token, i) => {
-    if (token.pos === "動詞" || (token.basic_form === "する" || token.basic_form === "やる")) {
-      if (tokens[i + 1] && (tokens[i + 1].basic_form === "て" || tokens[i + 1].basic_form === "ろ" || tokens[i + 1].conjugated_form.includes("命令") || (tokens[i + 1].basic_form === "な" && tokens[i + 1].pos_detail_1 === "終助詞"))) probabilityOfImperative += 0.5;
+    if (
+      token.pos === "動詞" ||
+      token.basic_form === "する" ||
+      token.basic_form === "やる"
+    ) {
+      if (
+        tokens[i + 1] &&
+        (tokens[i + 1].basic_form === "て" ||
+          tokens[i + 1].basic_form === "ろ" ||
+          tokens[i + 1].conjugated_form.includes("命令") ||
+          (tokens[i + 1].basic_form === "な" &&
+            tokens[i + 1].pos_detail_1 === "終助詞"))
+      )
+        probabilityOfImperative += 0.5;
       if (token.conjugated_form !== "連用形") probabilityOfImperative -= 0.8;
-      if (tokens[i - 1] && tokens[i - 1].basic_form === "を") probabilityOfImperative += 0.1;
+      if (tokens[i - 1] && tokens[i - 1].basic_form === "を")
+        probabilityOfImperative += 0.1;
       if (token.conjugated_form === "未然形") {
         probabilityOfImperative -= 0.05;
 
-        if ((tokens[i + 1] && tokens[i + 1].basic_form === "ない") || (tokens[i + 2] && tokens[i + 2].basic_form === "ない")) {
+        if (
+          (tokens[i + 1] && tokens[i + 1].basic_form === "ない") ||
+          (tokens[i + 2] && tokens[i + 2].basic_form === "ない")
+        ) {
           probabilityOfImperative += 0.1;
         }
       }

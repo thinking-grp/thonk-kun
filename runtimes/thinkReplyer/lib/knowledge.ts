@@ -4,7 +4,7 @@ import * as syntaxManager from "./syntax";
 export function whichOfTwoTokensKnowledgeTypes(
   syntax: database.Syntax
 ): database.TwoTokensTypeKnowledgeTypes {
-  let type: database.TwoTokensTypeKnowledgeTypes = "x-is-y";
+  let type: database.TwoTokensTypeKnowledgeTypes = "none";
 
   syntax.tokens.forEach((token, i) => {
     // ○○"は"○○です・○○"は"○○にあります
@@ -64,6 +64,15 @@ export function whichOfTwoTokensKnowledgeTypes(
           }
         }
       }
+    } else if (
+      (syntax.tokens[i - 1] &&
+        syntax.tokens[i - 1].pos === "名詞" &&
+        token.pos_detail_1.includes("並立助詞") &&
+        token.basic_form === "か") ||
+      token.text === "or" ||
+      token.text === "なのか"
+    ) {
+      type = "x-or-y";
     }
 
     if (token.basic_form === "できる") {
@@ -228,6 +237,83 @@ export function createXCanYTypeKnowledge(
   return result.mean[0].can;
 }
 
+export function createXOrYTypeKnowledge(
+  syntax: database.Syntax
+): database.Or[] {
+  const result: database.Syntax = { ...syntax };
+  result.tokens = [];
+
+  if (!result.mean) {
+    result.mean = [];
+
+    result.mean[0] = {
+      is: [],
+      isQuestion: syntaxManager.isQuestion(syntax.tokens),
+    };
+  }
+
+  syntax.tokens.forEach((token, i) => {
+    if (
+      (token.pos === "助詞" ||
+        ((token.pos_detail_1.includes("係助詞") ||
+          token.pos_detail_2.includes("連語")) &&
+          token.basic_form === "か") ||
+        token.text === "or") &&
+      syntax.tokens[i - 1] &&
+      (syntax.tokens[i - 1].pos === "名詞" ||
+        syntax.tokens[i - 1].pos === "形容詞") &&
+      syntax.tokens[i + 1] &&
+      (syntax.tokens[i + 1].pos === "名詞" ||
+        syntax.tokens[i + 1].pos === "形容詞")
+    ) {
+      if (!result.mean) {
+        result.mean = [];
+
+        result.mean[0] = {
+          is: [[[], []]],
+          isQuestion: syntaxManager.isQuestion(syntax.tokens),
+        };
+      }
+
+      if (!result.mean[0].is) {
+        result.mean[0].is = [];
+      }
+
+      if (!result.mean[0].is[0]) {
+        result.mean[0].is[0] = [[], []];
+      }
+      result.mean[0].is[0][0] = [];
+
+      const tempTokens = [];
+      for (let index = i - 1; index >= 0; index--) {
+        const token = syntax.tokens[index];
+        if (token.pos === "名詞" || token.pos === "形容詞")
+          tempTokens[tempTokens.length] = token;
+      }
+
+      result.mean[0].is[0][0].push(...tempTokens.reverse());
+
+      result.mean[0].is[0][1] = [];
+
+      for (let index = i + 1; index < syntax.tokens.length; index++) {
+        const token = syntax.tokens[index];
+        if (token.pos === "名詞" || token.pos === "形容詞")
+          result.mean[0].is[0][1][result.mean[0].is[0][1].length] = token;
+      }
+    }
+  });
+
+  if (!result.mean[0].is) {
+    result.mean[0].is = [];
+  }
+
+  return [
+    {
+      or: result.mean[0].is[0],
+    },
+  ];
+}
+
 export function createTwoTokensKnowledge(
   syntax: database.Syntax
 ): database.TwoTokensTypeKnowledge {
@@ -235,6 +321,7 @@ export function createTwoTokensKnowledge(
 
   let is: database.Is[] = [];
   let can: database.Can[] = [];
+  let or: database.Or[] = [];
 
   if (type === "x-is-y") {
     const filteredSyntax = syntaxManager.cleanSyntaxForTwoTokensKnowledgeType(
@@ -250,6 +337,13 @@ export function createTwoTokensKnowledge(
     );
 
     can = createXCanYTypeKnowledge(filteredSyntax);
+  } else if (type === "x-or-y") {
+    const filteredSyntax = syntaxManager.cleanSyntaxForTwoTokensKnowledgeType(
+      type,
+      syntax
+    );
+
+    or = createXOrYTypeKnowledge(filteredSyntax);
   }
 
   return {
@@ -257,6 +351,7 @@ export function createTwoTokensKnowledge(
     type,
     is,
     can,
+    or,
     isQuestion: syntaxManager.isQuestion(syntax.tokens),
   };
 }

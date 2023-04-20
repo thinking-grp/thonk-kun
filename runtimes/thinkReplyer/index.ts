@@ -45,8 +45,7 @@ export async function train(trainingData: any, options: any) {
 
   tokenManager.addTokensToDatabase(convertedTokens);
 
-  const filteredTokens =
-    tokenManager.replaceExistingTokens(convertedTokens);
+  const filteredTokens = tokenManager.replaceExistingTokens(convertedTokens);
 
   const tokens2Negaposi = tokenManager.getTokensNegaposi(tokens2);
 
@@ -57,8 +56,7 @@ export async function train(trainingData: any, options: any) {
 
   tokenManager.addTokensToDatabase(convertedTokens2);
 
-  const filteredTokens2 =
-    tokenManager.replaceExistingTokens(convertedTokens2);
+  const filteredTokens2 = tokenManager.replaceExistingTokens(convertedTokens2);
 
   const splitedTokens = syntaxManager.splitSentence(filteredTokens);
 

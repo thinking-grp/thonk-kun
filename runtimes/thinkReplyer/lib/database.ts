@@ -31,6 +31,7 @@ export type QuestionType =
 export type SyntaxMean = {
   is?: Is[];
   can?: Can[];
+  or?: Or[];
   isQuestion: boolean;
   isImperative?: boolean;
   question?: {
@@ -138,6 +139,11 @@ export type ReplySyntaxDic = ReplySyntax[];
 
 export type Is = [Token[], Token[]];
 
+export type Or = {
+  or: [Token[], Token[]];
+  answer?: number;
+};
+
 export type Can = {
   who?: Token[];
   what: Token[];
@@ -151,7 +157,9 @@ export type TwoTokensTypeKnowledgeTypes =
   | "x-is-in-y"
   | "x-is-similar-to-y"
   | "x-is-for-y"
-  | "x-can-y";
+  | "x-can-y"
+  | "x-or-y"
+  | "none";
 
 export type HowToTypeKnowledgeTypes = "how-to";
 
@@ -164,6 +172,7 @@ export type TwoTokensTypeKnowledge = {
   id: string;
   is?: Is[];
   can?: Can[];
+  or?: Or[];
   negaposi?: number;
   isQuestion?: boolean;
 };

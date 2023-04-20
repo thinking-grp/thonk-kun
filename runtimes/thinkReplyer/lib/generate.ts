@@ -16,7 +16,10 @@ export async function generateReply(
   if (text.startsWith("/##-")) {
     let result: database.Token[] = [];
 
-    if (text.slice(4) === "ping") result = tokenManager.convertKuromojisToTokens(await tokenManager.tokenize("Pong!"));
+    if (text.slice(4) === "ping")
+      result = tokenManager.convertKuromojisToTokens(
+        await tokenManager.tokenize("Pong!")
+      );
 
     return result;
   }
