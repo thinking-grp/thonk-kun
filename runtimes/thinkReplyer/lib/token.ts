@@ -107,7 +107,7 @@ export function getTokenByWord(
   tokens: kuromoji.IpadicFeatures[] | database.Token[],
   text: string
 ): database.Token[] {
-  if (!implementsTokens(tokens)) tokens = convertKuromojiToToken(tokens);
+  if (!implementsTokens(tokens)) tokens = convertKuromojisToTokens(tokens);
 
   const result: database.Token[] = [];
 
@@ -138,7 +138,7 @@ export function implementsToken(arg: any): arg is database.Token {
   );
 }
 
-export function excludeTokenWithPos(
+export function excludeTokenByPos(
   token: kuromoji.IpadicFeatures[] | database.Token[],
   pos = "名詞"
 ): kuromoji.IpadicFeatures[] | database.Token[] {
@@ -211,7 +211,7 @@ export function replaceTokensByPos(
   return token;
 }
 
-export function hideTokensByPos(
+export function markReplaceableTokensWithPos(
   token: database.Token[],
   pos = "名詞"
 ): database.Token[] {
@@ -227,7 +227,7 @@ export function hideTokensByPos(
   return token;
 }
 
-export function replaceTokenOfDatabaseById(
+export function replaceTokenByDatabaseById(
   tokenId: string,
   token: database.Token
 ) {
@@ -244,7 +244,7 @@ export function replaceTokenOfDatabaseById(
   database.setTokenDic(dict);
 }
 
-export function replaceWithExistingTokens(tokens: database.Token[]) {
+export function replaceExistingTokens(tokens: database.Token[]) {
   tokens.forEach((word, i) => {
     if (!word) return;
     if (typeof word !== "object") return;
@@ -280,7 +280,7 @@ export function addTokensToDatabase(tokens: database.Token[]) {
   database.setTokenDic(dict);
 }
 
-export function convertKuromojiToToken(
+export function convertKuromojisToTokens(
   tokens: kuromoji.IpadicFeatures[] | database.Token[],
   tokensNegaposi?: number
 ): database.Token[] {
@@ -326,7 +326,7 @@ export function convertTokensToString(tokens: database.Token[]): string {
   return result;
 }
 
-export function convertTokensIdToTokens(tokensId: string[]): database.Token[] {
+export function getTokensByTokenIds(tokensId: string[]): database.Token[] {
   const result: database.Token[] = [];
 
   for (let i = 0; i < tokensId.length; i++) {
@@ -336,7 +336,7 @@ export function convertTokensIdToTokens(tokensId: string[]): database.Token[] {
   return result;
 }
 
-export function generateUnkToken(
+export function generateReplaceableToken(
   base: database.Token = unkToken
 ): database.Token {
   base.pos_detail_3 += "／置換可能";

@@ -25,5 +25,5 @@ export function addMeanToDatabase(tokenId: string, mean: database.TokenMean) {
 
   token.mean = mean;
 
-  tokenManager.replaceTokenOfDatabaseById(tokenId, token);
+  tokenManager.replaceTokenByDatabaseById(tokenId, token);
 }

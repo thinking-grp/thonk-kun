@@ -85,7 +85,7 @@ export function createXIsYTypeKnowledge(
 
     result.mean[0] = {
       is: [],
-      isQuestion: syntaxManager.isQuestion(syntax),
+      isQuestion: syntaxManager.isQuestion(syntax.tokens),
     };
   }
 
@@ -108,7 +108,7 @@ export function createXIsYTypeKnowledge(
 
         result.mean[0] = {
           is: [[[], []]],
-          isQuestion: syntaxManager.isQuestion(syntax),
+          isQuestion: syntaxManager.isQuestion(syntax.tokens),
         };
       }
 
@@ -158,7 +158,7 @@ export function createXCanYTypeKnowledge(
 
     result.mean[0] = {
       is: [],
-      isQuestion: syntaxManager.isQuestion(syntax),
+      isQuestion: syntaxManager.isQuestion(syntax.tokens),
     };
   }
 
@@ -188,7 +188,7 @@ export function createXCanYTypeKnowledge(
 
         result.mean[0] = {
           is: [[[], []]],
-          isQuestion: syntaxManager.isQuestion(syntax),
+          isQuestion: syntaxManager.isQuestion(syntax.tokens),
         };
       }
 
@@ -257,7 +257,7 @@ export function createTwoTokensKnowledge(
     type,
     is,
     can,
-    isQuestion: syntaxManager.isQuestion(syntax),
+    isQuestion: syntaxManager.isQuestion(syntax.tokens),
   };
 }
 
@@ -277,7 +277,7 @@ export function isTwoTokensKnowledge(syntax: database.Syntax): boolean {
         syntaxMean[0].is[0][1] &&
         (syntaxMean[0].is[0][0].length !== 0 ||
           syntaxMean[0].is[0][1].length !== 0) &&
-        !syntaxManager.isQuestion(syntax))
+        !syntaxManager.isQuestion(syntax.tokens))
   );
 }
 

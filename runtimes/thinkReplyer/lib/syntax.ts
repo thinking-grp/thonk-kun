@@ -10,7 +10,7 @@ export function splitSentence(
   tokens: kuromoji.IpadicFeatures[] | database.Token[]
 ): database.Token[][] {
   const convertedTokens: database.Token[] =
-    tokenManager.convertKuromojiToToken(tokens);
+    tokenManager.convertKuromojisToTokens(tokens);
   const result: database.Token[][] = [convertedTokens];
 
   for (let i = 0; i < convertedTokens.length; i++) {
@@ -68,13 +68,13 @@ export function splitSentence(
   return result;
 }
 
-export function isQuestion(syntax: database.Syntax): boolean {
+export function isQuestion(tokens: database.Token[]): boolean {
   let result = 0;
-  syntax.tokens.forEach((token, i) => {
-    if (token.pos_detail_1.includes("終助詞") && syntax.tokens[i + 1]) {
+  tokens.forEach((token, i) => {
+    if (token.pos_detail_1.includes("終助詞") && tokens[i + 1]) {
       if (
-        syntax.tokens[i + 1].pos !== "名詞" ||
-        syntax.tokens[i + 1].pos !== "形容詞"
+        tokens[i + 1].pos !== "名詞" ||
+        tokens[i + 1].pos !== "形容詞"
       ) {
         result += 0.2;
       }
@@ -85,7 +85,7 @@ export function isQuestion(syntax: database.Syntax): boolean {
     }
 
     if (token.text === "?" || token.text === "？") {
-      if (syntax.tokens[i - 1]) {
+      if (tokens[i - 1]) {
         result += 1;
       }
     }
@@ -109,7 +109,8 @@ export function createSyntaxMean(
 
     result.mean[0] = {
       is: [],
-      isQuestion: isQuestion(syntax),
+      isQuestion: isQuestion(syntax.tokens),
+      isImperative: isImperative(syntax.tokens)
     };
   }
 
@@ -178,13 +179,26 @@ export function isPositive(tokens: database.Token[]): boolean {
   return negativeOrPositive >= 1;
 }
 
-// export function isImperative(syntax: database.Syntax): boolean {
-//   const probabilityOfImperative = 0;
+export function isImperative(tokens: database.Token[]): boolean {
+  let probabilityOfImperative = 0;
 
-//   syntax.tokens.forEach((token) => {});
+  tokens.forEach((token, i) => {
+    if (token.pos === "動詞" || (token.basic_form === "する" || token.basic_form === "やる")) {
+      if (tokens[i + 1] && (tokens[i + 1].basic_form === "て" || tokens[i + 1].basic_form === "ろ" || tokens[i + 1].conjugated_form.includes("命令"))) probabilityOfImperative += 0.5;
+      if (token.conjugated_form !== "連用形") probabilityOfImperative -= 0.8;
+      if (tokens[i - 1] && tokens[i - 1].basic_form === "を") probabilityOfImperative += 0.1;
+      if (token.conjugated_form === "未然形") {
+        probabilityOfImperative -= 0.05;
 
-//   return probabilityOfImperative > 0;
-// }
+        if ((tokens[i + 1] && tokens[i + 1].basic_form === "ない") || (tokens[i + 2] && tokens[i + 2].basic_form === "ない")) {
+          probabilityOfImperative += 0.1;
+        }
+      }
+    }
+  });
+
+  return probabilityOfImperative > 0;
+}
 
 export function generateFromRandomSyntax(): database.Token[] {
   const dict: database.SyntaxDic = database.getSyntaxDic();
@@ -255,7 +269,7 @@ export function generateFromRandomSyntax(): database.Token[] {
 }
 
 export function createSyntax(tokens: database.Token[]): database.Syntax {
-  const result = tokenManager.hideTokensByPos(tokens, "名詞");
+  const result = tokenManager.markReplaceableTokensWithPos(tokens, "名詞");
 
   if (!tokenManager.implementsTokens(result)) throw new Error("aa");
 
@@ -273,7 +287,7 @@ export function createSyntax(tokens: database.Token[]): database.Syntax {
     }
 
     if (probabilityOfPenetrating >= 1) {
-      result[i] = tokenManager.generateUnkToken(result[i]);
+      result[i] = tokenManager.generateReplaceableToken(result[i]);
     }
   }
 

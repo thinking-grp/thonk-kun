@@ -9,7 +9,7 @@ export function addOriginMeansToOrigin(
 ): database.SyntaxMean {
   if (!mean) throw new Error();
   if (!mean.isQuestion) {
-    if (syntaxManager.isQuestion(syntax)) mean.isQuestion = true;
+    if (syntaxManager.isQuestion(syntax.tokens)) mean.isQuestion = true;
   }
 
   if (!mean.question && syntax.mean && syntax.mean[0]) {
@@ -51,7 +51,7 @@ export function addReplyMeansToReply(
 ): database.SyntaxMean {
   if (!mean) throw new Error();
   if (!mean.isReply) {
-    if (!syntaxManager.isQuestion(syntax)) mean.isReply = true;
+    if (!syntaxManager.isQuestion(syntax.tokens)) mean.isReply = true;
   }
 
   if (!mean.reply) {

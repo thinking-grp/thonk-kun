@@ -16,7 +16,7 @@ export async function generateReply(
   if (text.startsWith("/##-")) {
     let result: database.Token[] = [];
 
-    if (text.slice(4) === "ping") result = tokenManager.convertKuromojiToToken(await tokenManager.tokenize("Pong!"));
+    if (text.slice(4) === "ping") result = tokenManager.convertKuromojisToTokens(await tokenManager.tokenize("Pong!"));
 
     return result;
   }
@@ -26,13 +26,13 @@ export async function generateReply(
 
   const tokens2Negaposi = tokenManager.getTokensNegaposi(replyTokens);
 
-  const convertedReplyTokens = tokenManager.convertKuromojiToToken(
+  const convertedReplyTokens = tokenManager.convertKuromojisToTokens(
     replyTokens,
     tokens2Negaposi
   );
 
   const filteredReplyTokens =
-    tokenManager.replaceWithExistingTokens(convertedReplyTokens);
+    tokenManager.replaceExistingTokens(convertedReplyTokens);
 
   const replySyntax = syntaxManager.createSyntax(filteredReplyTokens);
 
@@ -51,14 +51,20 @@ export async function generateReply(
     }
   }
 
-  if (replySyntax.mean[0].isQuestion) {
+  if (replySyntax.mean[0].isImperative && replySyntax.mean[0].isQuestion) {
+    const tokens = tokenManager.convertKuromojisToTokens(
+      await tokenManager.tokenize("ごめんなさい、私はできません...。")
+    );
+
+    result = tokens;
+  } else if (replySyntax.mean[0].isQuestion) {
     if (replySyntax.mean[0].question) {
       if (
         replySyntax.mean[0].question.type === "x-is-y" &&
         replySyntax.mean[0].is
       ) {
         if (!replySyntax.mean[0].is[0]) {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize(
               "ごめんなさい、文章を理解できませんでした...。"
             )
@@ -72,7 +78,7 @@ export async function generateReply(
           );
 
           if (knowledges.length === 0) {
-            const tokens = tokenManager.convertKuromojiToToken(
+            const tokens = tokenManager.convertKuromojisToTokens(
               await tokenManager.tokenize(
                 "ごめんなさい、私にはわかりません...。"
               )
@@ -80,7 +86,7 @@ export async function generateReply(
 
             result = tokens;
           } else if (knowledges[0].type !== "x-is-y" || !knowledges[0].is) {
-            const tokens = tokenManager.convertKuromojiToToken(
+            const tokens = tokenManager.convertKuromojisToTokens(
               await tokenManager.tokenize(
                 "ごめんなさい、私にはわかりません...。"
               )
@@ -99,7 +105,7 @@ export async function generateReply(
               tokenManager.convertTokensToString(knowledgeTokens[0]) ===
               "あなた"
             ) {
-              tokens = tokenManager.convertKuromojiToToken(
+              tokens = tokenManager.convertKuromojisToTokens(
                 await tokenManager.tokenize(
                   `私は${tokenManager.convertTokensToString(
                     knowledgeTokens[1]
@@ -107,7 +113,7 @@ export async function generateReply(
                 )
               );
             } else {
-              tokens = tokenManager.convertKuromojiToToken(
+              tokens = tokenManager.convertKuromojisToTokens(
                 await tokenManager.tokenize(
                   `${tokenManager.convertTokensToString(
                     knowledgeTokens[0]
@@ -131,19 +137,19 @@ export async function generateReply(
         );
 
         if (knowledges.length === 0) {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
           );
 
           result = tokens;
         } else if (knowledges[0].type !== "x-isnt-y" || !knowledges[0].is) {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
           );
 
           result = tokens;
         } else {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize(
               `${tokenManager.convertTokensToString(
                 knowledges[0].is[0][0]
@@ -165,19 +171,19 @@ export async function generateReply(
         );
 
         if (knowledges.length === 0) {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
           );
 
           result = tokens;
         } else if (knowledges[0].type !== "x-can-y" || !knowledges[0].can) {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
           );
 
           result = tokens;
         } else {
-          const tokens = tokenManager.convertKuromojiToToken(
+          const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize(
               `${tokenManager.convertTokensToString(
                 knowledges[0].can[0].what
@@ -188,13 +194,19 @@ export async function generateReply(
           result = tokens;
         }
       } else {
-        const tokens = tokenManager.convertKuromojiToToken(
+        const tokens = tokenManager.convertKuromojisToTokens(
           await tokenManager.tokenize("ごめんなさい、私にはわかりません...。")
         );
 
         result = tokens;
       }
     }
+  } else if (replySyntax.mean[0].isImperative) {
+    const tokens = tokenManager.convertKuromojisToTokens(
+      await tokenManager.tokenize("ごめんなさい、私はできません...。")
+    );
+
+    result = tokens;
   } else {
     if (options.allowTrain) {
       if (
@@ -213,7 +225,7 @@ export async function generateReply(
 
       if (
         knowledgeManager.isTwoTokensKnowledge(filteredSyntax) &&
-        !syntaxManager.isQuestion(filteredSyntax)
+        !syntaxManager.isQuestion(filteredSyntax.tokens)
       ) {
         const knowledge =
           knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
@@ -221,13 +233,13 @@ export async function generateReply(
         knowledgeManager.addKnowledgeToDatabase(knowledge);
       }
 
-      const tokens = tokenManager.convertKuromojiToToken(
+      const tokens = tokenManager.convertKuromojisToTokens(
         await tokenManager.tokenize("そうなんですね。覚えました。")
       );
 
       result = tokens;
     } else {
-      const tokens = tokenManager.convertKuromojiToToken(
+      const tokens = tokenManager.convertKuromojisToTokens(
         await tokenManager.tokenize("そうなんですね。教えてくれてありがとう。")
       );
 

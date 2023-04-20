@@ -32,6 +32,7 @@ export type SyntaxMean = {
   is?: Is[];
   can?: Can[];
   isQuestion: boolean;
+  isImperative?: boolean;
   question?: {
     type: QuestionType;
     when?: Date;

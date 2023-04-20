@@ -38,7 +38,7 @@ export async function train(trainingData: any, options: any) {
 
   const tokensNegaposi = tokenManager.getTokensNegaposi(tokens);
 
-  const convertedTokens = tokenManager.convertKuromojiToToken(
+  const convertedTokens = tokenManager.convertKuromojisToTokens(
     tokens,
     tokensNegaposi
   );
@@ -46,11 +46,11 @@ export async function train(trainingData: any, options: any) {
   tokenManager.addTokensToDatabase(convertedTokens);
 
   const filteredTokens =
-    tokenManager.replaceWithExistingTokens(convertedTokens);
+    tokenManager.replaceExistingTokens(convertedTokens);
 
   const tokens2Negaposi = tokenManager.getTokensNegaposi(tokens2);
 
-  const convertedTokens2 = tokenManager.convertKuromojiToToken(
+  const convertedTokens2 = tokenManager.convertKuromojisToTokens(
     tokens2,
     tokens2Negaposi
   );
@@ -58,7 +58,7 @@ export async function train(trainingData: any, options: any) {
   tokenManager.addTokensToDatabase(convertedTokens2);
 
   const filteredTokens2 =
-    tokenManager.replaceWithExistingTokens(convertedTokens2);
+    tokenManager.replaceExistingTokens(convertedTokens2);
 
   const splitedTokens = syntaxManager.splitSentence(filteredTokens);
 
@@ -106,7 +106,7 @@ export async function train(trainingData: any, options: any) {
 
     if (
       knowledgeManager.isTwoTokensKnowledge(syntax) &&
-      !syntaxManager.isQuestion(syntax)
+      !syntaxManager.isQuestion(syntax.tokens)
     ) {
       const knowledge = knowledgeManager.createTwoTokensKnowledge(syntax);
 
@@ -115,7 +115,7 @@ export async function train(trainingData: any, options: any) {
 
     if (
       knowledgeManager.isTwoTokensKnowledge(syntax2) &&
-      !syntaxManager.isQuestion(syntax2)
+      !syntaxManager.isQuestion(syntax2.tokens)
     ) {
       const knowledge2 = knowledgeManager.createTwoTokensKnowledge(syntax2);
 
