@@ -183,7 +183,7 @@ export function isImperative(tokens: database.Token[]): boolean {
   let probabilityOfImperative = 0;
 
   tokens.forEach((token, i) => {
-    if (token.pos === "動詞" || (token.basic_form === "する" || token.basic_form === "やる")) {
+    if (token.pos === "動詞" || (token.basic_form === "する" || token.basic_form === "やる") || token.conjugated_form.includes("命令")) {
       if (tokens[i + 1] && (tokens[i + 1].basic_form === "て" || tokens[i + 1].basic_form === "ろ" || tokens[i + 1].conjugated_form.includes("命令"))) probabilityOfImperative += 0.5;
       if (token.conjugated_form !== "連用形") probabilityOfImperative -= 0.8;
       if (tokens[i - 1] && tokens[i - 1].basic_form === "を") probabilityOfImperative += 0.1;
