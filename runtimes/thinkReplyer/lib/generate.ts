@@ -41,8 +41,10 @@ export async function generateReply(
     tokens2Negaposi
   );
 
-  const filteredReplyTokens =
-    tokenManager.replaceExistingTokens(convertedReplyTokens, options.databaseDirectory);
+  const filteredReplyTokens = tokenManager.replaceExistingTokens(
+    convertedReplyTokens,
+    options.databaseDirectory
+  );
 
   const replySyntax = syntaxManager.createSyntax(filteredReplyTokens);
 
@@ -52,7 +54,10 @@ export async function generateReply(
   if (!replySyntax.mean[0]) throw new Error();
 
   if (options.allowTrain) {
-    tokenManager.addTokensToDatabase(filteredReplyTokens, options.databaseDirectory);
+    tokenManager.addTokensToDatabase(
+      filteredReplyTokens,
+      options.databaseDirectory
+    );
 
     if (
       syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length === 0
@@ -73,7 +78,6 @@ export async function generateReply(
         replySyntax.mean[0].question.type === "x-is-y" &&
         replySyntax.mean[0].is
       ) {
-
         if (!replySyntax.mean[0].is[0]) {
           const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize(
@@ -88,7 +92,7 @@ export async function generateReply(
             replySyntax.mean[0].is[0][0],
             options.databaseDirectory
           );
-          
+
           if (knowledges.length === 0) {
             const tokens = tokenManager.convertKuromojisToTokens(
               await tokenManager.tokenize(
@@ -113,7 +117,7 @@ export async function generateReply(
 
             const replyTokens = [
               replySyntax.mean[0].is[0][0],
-              replySyntax.mean[0].is[0][1]
+              replySyntax.mean[0].is[0][1],
             ];
 
             let tokens: database.Token[];
@@ -142,7 +146,11 @@ export async function generateReply(
 
               result = tokens;
             } else {
-              if (knowledges[0].is[0] && JSON.stringify(knowledges[0].is[0][1]) === JSON.stringify(replyTokens[1])) {
+              if (
+                knowledges[0].is[0] &&
+                JSON.stringify(knowledges[0].is[0][1]) ===
+                  JSON.stringify(replyTokens[1])
+              ) {
                 tokens = tokenManager.convertKuromojisToTokens(
                   await tokenManager.tokenize(
                     `はい、${tokenManager.convertTokensToString(
@@ -198,14 +206,13 @@ export async function generateReply(
 
           const replyTokens = [
             replySyntax.mean[0].is[0][0],
-            replySyntax.mean[0].is[0][1]
+            replySyntax.mean[0].is[0][1],
           ];
 
           let tokens: database.Token[];
 
           if (
-            tokenManager.convertTokensToString(knowledgeTokens[0]) ===
-            "あなた"
+            tokenManager.convertTokensToString(knowledgeTokens[0]) === "あなた"
           ) {
             tokens = tokenManager.convertKuromojisToTokens(
               await tokenManager.tokenize(
@@ -227,7 +234,11 @@ export async function generateReply(
 
             result = tokens;
           } else {
-            if (knowledges[0].is[0] && JSON.stringify(knowledges[0].is[0][1]) === JSON.stringify(replyTokens[1])) {
+            if (
+              knowledges[0].is[0] &&
+              JSON.stringify(knowledges[0].is[0][1]) ===
+                JSON.stringify(replyTokens[1])
+            ) {
               tokens = tokenManager.convertKuromojisToTokens(
                 await tokenManager.tokenize(
                   `はい、${tokenManager.convertTokensToString(

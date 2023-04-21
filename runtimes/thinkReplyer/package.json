@@ -1,10 +1,10 @@
 {
   "name": "thinkreplyer",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "thinkReplyer is a pseudo AI model for thinkerAI developed by thinking.",
   "main": "index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "eslint": "npx eslint --ext .ts .",
     "eslint:fix": "npx eslint --fix --ext .ts .",
     "check-types": "tsc --noEmit",

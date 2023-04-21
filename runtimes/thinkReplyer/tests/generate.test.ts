@@ -20,14 +20,14 @@ describe("generator", () => {
 
   it("generator.generateReply() 3", async () => {
     if (fs.existsSync(`${__dirname}/../temp/assets`)) {
-      fs.readdir(`${__dirname}/../temp/assets`, function(err, files){
-        if(err){
+      fs.readdir(`${__dirname}/../temp/assets`, function (err, files) {
+        if (err) {
           throw err;
         }
-        files.forEach(function(file){
-          fs.unlink(`${__dirname}/../temp/assets/${file}`, function(err){
-            if(err){
-              throw(err);
+        files.forEach(function (file) {
+          fs.unlink(`${__dirname}/../temp/assets/${file}`, function (err) {
+            if (err) {
+              throw err;
             }
           });
         });
@@ -35,7 +35,7 @@ describe("generator", () => {
     } else {
       if (!fs.existsSync(`${__dirname}/../temp`)) {
         fs.mkdirSync(`${__dirname}/../temp`);
-      } 
+      }
 
       if (!fs.existsSync(`${__dirname}/../temp/assets`)) {
         fs.mkdirSync(`${__dirname}/../temp/assets`);
@@ -47,21 +47,21 @@ describe("generator", () => {
 
     await thinkReplyer.interact(text, [], {
       allowTrain: true,
-      databaseDirectory: `${__dirname}/../temp/assets`
+      databaseDirectory: `${__dirname}/../temp/assets`,
     });
 
     const result = await thinkReplyer.interact(question, [], {
-      databaseDirectory: `${__dirname}/../temp/assets`
+      databaseDirectory: `${__dirname}/../temp/assets`,
     });
 
-    fs.readdir(`${__dirname}/../temp/assets`, function(err, files){
-      if(err){
+    fs.readdir(`${__dirname}/../temp/assets`, function (err, files) {
+      if (err) {
         throw err;
       }
-      files.forEach(function(file){
-        fs.unlink(`${__dirname}/../temp/assets/${file}`, function(err){
-          if(err){
-            throw(err);
+      files.forEach(function (file) {
+        fs.unlink(`${__dirname}/../temp/assets/${file}`, function (err) {
+          if (err) {
+            throw err;
           }
         });
       });
