@@ -230,7 +230,7 @@ export function markReplaceableTokensWithPos(
     if (typeof word !== "object") return;
 
     if (word.pos === pos) {
-      token[i].pos_detail_3 += "／置換可能";
+      if (!token[i].pos_detail_3.includes("／置換可能")) token[i].pos_detail_3 += "／置換可能";
     }
   });
 
@@ -255,12 +255,12 @@ export function replaceTokenByDatabaseById(
   database.setTokenDic(dict, databaseDirectory);
 }
 
-export function replaceExistingTokens(tokens: database.Token[]) {
+export function replaceExistingTokens(tokens: database.Token[], databaseDirectory?: string) {
   tokens.forEach((word, i) => {
     if (!word) return;
     if (typeof word !== "object") return;
 
-    const duplicationToken = getDuplicationTokensFromDatabase(word);
+    const duplicationToken = getDuplicationTokensFromDatabase(word, databaseDirectory);
 
     if (duplicationToken.length !== 0) tokens[i] = duplicationToken[0];
   });
@@ -356,7 +356,7 @@ export function getTokensByTokenIds(tokensId: string[]): database.Token[] {
 export function generateReplaceableToken(
   base: database.Token = unkToken
 ): database.Token {
-  base.pos_detail_3 += "／置換可能";
+  if (!base.pos_detail_3.includes("／置換可能")) base.pos_detail_3 += "／置換可能";
   return base;
 }
 

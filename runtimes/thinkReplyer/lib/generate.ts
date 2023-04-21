@@ -42,7 +42,7 @@ export async function generateReply(
   );
 
   const filteredReplyTokens =
-    tokenManager.replaceExistingTokens(convertedReplyTokens);
+    tokenManager.replaceExistingTokens(convertedReplyTokens, options.databaseDirectory);
 
   const replySyntax = syntaxManager.createSyntax(filteredReplyTokens);
 
@@ -52,12 +52,12 @@ export async function generateReply(
   if (!replySyntax.mean[0]) throw new Error();
 
   if (options.allowTrain) {
-    tokenManager.addTokensToDatabase(filteredReplyTokens);
+    tokenManager.addTokensToDatabase(filteredReplyTokens, options.databaseDirectory);
 
     if (
       syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length === 0
     ) {
-      syntaxManager.addSyntaxToDatabase(replySyntax);
+      syntaxManager.addSyntaxToDatabase(replySyntax, options.databaseDirectory);
     }
   }
 
@@ -73,6 +73,7 @@ export async function generateReply(
         replySyntax.mean[0].question.type === "x-is-y" &&
         replySyntax.mean[0].is
       ) {
+
         if (!replySyntax.mean[0].is[0]) {
           const tokens = tokenManager.convertKuromojisToTokens(
             await tokenManager.tokenize(
@@ -84,9 +85,10 @@ export async function generateReply(
         } else {
           const knowledges = knowledgeManager.getKnowledgeFromDatabase(
             replySyntax.mean[0].question.type,
-            replySyntax.mean[0].is[0][0]
+            replySyntax.mean[0].is[0][0],
+            options.databaseDirectory
           );
-
+          
           if (knowledges.length === 0) {
             const tokens = tokenManager.convertKuromojisToTokens(
               await tokenManager.tokenize(
@@ -109,6 +111,11 @@ export async function generateReply(
               knowledges[0].is[0][1],
             ];
 
+            const replyTokens = [
+              replySyntax.mean[0].is[0][0],
+              replySyntax.mean[0].is[0][1]
+            ];
+
             let tokens: database.Token[];
 
             if (
@@ -122,7 +129,7 @@ export async function generateReply(
                   )}です。`
                 )
               );
-            } else if (tokenGroupManager.isWhatToken(knowledgeTokens[1][0])) {
+            } else if (tokenGroupManager.isWhatToken(replyTokens[1][0])) {
               tokens = tokenManager.convertKuromojisToTokens(
                 await tokenManager.tokenize(
                   `${tokenManager.convertTokensToString(
@@ -135,7 +142,7 @@ export async function generateReply(
 
               result = tokens;
             } else {
-              if (knowledges[0].is[1][0] === knowledgeTokens[1]) {
+              if (knowledges[0].is[0] && JSON.stringify(knowledges[0].is[0][1]) === JSON.stringify(replyTokens[1])) {
                 tokens = tokenManager.convertKuromojisToTokens(
                   await tokenManager.tokenize(
                     `はい、${tokenManager.convertTokensToString(
@@ -148,7 +155,7 @@ export async function generateReply(
               } else {
                 tokens = tokenManager.convertKuromojisToTokens(
                   await tokenManager.tokenize(
-                    `${tokenManager.convertTokensToString(
+                    `いいえ、${tokenManager.convertTokensToString(
                       knowledgeTokens[0]
                     )}は${tokenManager.convertTokensToString(
                       knowledgeTokens[1]
@@ -167,7 +174,8 @@ export async function generateReply(
       ) {
         const knowledges = knowledgeManager.getKnowledgeFromDatabase(
           replySyntax.mean[0].question.type,
-          replySyntax.mean[0].is[0][0]
+          replySyntax.mean[0].is[0][0],
+          options.databaseDirectory
         );
 
         if (knowledges.length === 0) {
@@ -183,17 +191,66 @@ export async function generateReply(
 
           result = tokens;
         } else {
-          const tokens = tokenManager.convertKuromojisToTokens(
-            await tokenManager.tokenize(
-              `${tokenManager.convertTokensToString(
-                knowledges[0].is[0][0]
-              )}は${tokenManager.convertTokensToString(
-                knowledges[0].is[0][1]
-              )}です。`
-            )
-          );
+          const knowledgeTokens = [
+            knowledges[0].is[0][0],
+            knowledges[0].is[0][1],
+          ];
 
-          result = tokens;
+          const replyTokens = [
+            replySyntax.mean[0].is[0][0],
+            replySyntax.mean[0].is[0][1]
+          ];
+
+          let tokens: database.Token[];
+
+          if (
+            tokenManager.convertTokensToString(knowledgeTokens[0]) ===
+            "あなた"
+          ) {
+            tokens = tokenManager.convertKuromojisToTokens(
+              await tokenManager.tokenize(
+                `私は${tokenManager.convertTokensToString(
+                  knowledgeTokens[1]
+                )}です。`
+              )
+            );
+          } else if (tokenGroupManager.isWhatToken(replyTokens[1][0])) {
+            tokens = tokenManager.convertKuromojisToTokens(
+              await tokenManager.tokenize(
+                `${tokenManager.convertTokensToString(
+                  knowledgeTokens[0]
+                )}は${tokenManager.convertTokensToString(
+                  knowledges[0].is[0][1]
+                )}です。`
+              )
+            );
+
+            result = tokens;
+          } else {
+            if (knowledges[0].is[0] && JSON.stringify(knowledges[0].is[0][1]) === JSON.stringify(replyTokens[1])) {
+              tokens = tokenManager.convertKuromojisToTokens(
+                await tokenManager.tokenize(
+                  `はい、${tokenManager.convertTokensToString(
+                    knowledgeTokens[0]
+                  )}は${tokenManager.convertTokensToString(
+                    knowledgeTokens[1]
+                  )}です。`
+                )
+              );
+            } else {
+              tokens = tokenManager.convertKuromojisToTokens(
+                await tokenManager.tokenize(
+                  `いいえ、${tokenManager.convertTokensToString(
+                    knowledgeTokens[0]
+                  )}は${tokenManager.convertTokensToString(
+                    knowledgeTokens[1]
+                  )}です。`
+                )
+              );
+            }
+
+            result = tokens;
+          }
         }
       } else if (
         replySyntax.mean[0].question.type === "x-can-y" &&
@@ -201,7 +258,8 @@ export async function generateReply(
       ) {
         const knowledges = knowledgeManager.getKnowledgeFromDatabase(
           replySyntax.mean[0].question.type,
-          replySyntax.mean[0].can[0].what
+          replySyntax.mean[0].can[0].what,
+          options.databaseDirectory
         );
 
         if (knowledges.length === 0) {

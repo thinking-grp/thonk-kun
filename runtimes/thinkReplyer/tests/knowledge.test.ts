@@ -1,7 +1,6 @@
 import * as tokenManager from "../lib/token";
 import * as syntaxManager from "../lib/syntax";
 import * as knowledgeManager from "../lib/knowledge";
-import fs from "fs";
 
 describe("knowledge", () => {
   it("knowledgeManager.whichOfTwoTokensKnowledgeTypes() (x-is-y)", async () => {
