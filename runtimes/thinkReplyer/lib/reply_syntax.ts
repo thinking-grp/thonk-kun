@@ -94,10 +94,14 @@ export function createReplySyntax(
   };
 }
 
-export function addReplySyntaxToDatabase(replySyntax: database.ReplySyntax) {
-  const dict: database.ReplySyntaxDic = database.getReplySyntaxDic();
+export function addReplySyntaxToDatabase(
+  replySyntax: database.ReplySyntax,
+  databaseDirectory?: string
+) {
+  const dict: database.ReplySyntaxDic =
+    database.getReplySyntaxDic(databaseDirectory);
 
   dict[dict.length] = replySyntax;
 
-  database.setReplySyntaxDic(dict);
+  database.setReplySyntaxDic(dict, databaseDirectory);
 }

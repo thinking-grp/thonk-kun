@@ -151,12 +151,15 @@ export function createSyntaxMean(
   return result.mean;
 }
 
-export function addSyntaxToDatabase(tokens: database.Syntax) {
-  const dict: database.SyntaxDic = database.getSyntaxDic();
+export function addSyntaxToDatabase(
+  tokens: database.Syntax,
+  databaseDirectory?: string
+) {
+  const dict: database.SyntaxDic = database.getSyntaxDic(databaseDirectory);
 
   dict[dict.length] = tokens;
 
-  database.setSyntaxDic(dict);
+  database.setSyntaxDic(dict, databaseDirectory);
 }
 
 export function isPositive(tokens: database.Token[]): boolean {
@@ -229,7 +232,9 @@ export function isImperative(tokens: database.Token[]): boolean {
   return probabilityOfImperative > 0;
 }
 
-export function generateFromRandomSyntax(): database.Token[] {
+export function generateFromRandomSyntax(
+  databaseDirectory?: string
+): database.Token[] {
   const dict: database.SyntaxDic = database.getSyntaxDic();
   const result: database.Syntax =
     dict[Math.floor(Math.random() * (dict.length - 1 - 0) + 0)];
@@ -241,7 +246,7 @@ export function generateFromRandomSyntax(): database.Token[] {
     if (word.pos_detail_3.includes("置換可能")) {
       if (word.pos_detail_1.includes("接続")) return;
 
-      const dict: database.TokenDic = database.getTokenDic();
+      const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
 
       const eachResult: database.Token[] = [];
 
@@ -510,8 +515,12 @@ export function getUsableSyntaxs(
   return result;
 }
 
-export function getSimillarTokens(token: database.Token): database.Token[] {
-  const dict: database.TokenGroupDic = database.getTokenGroupDic();
+export function getSimillarTokens(
+  token: database.Token,
+  databaseDirectory?: string
+): database.Token[] {
+  const dict: database.TokenGroupDic =
+    database.getTokenGroupDic(databaseDirectory);
 
   const result: database.Token[] = [];
 

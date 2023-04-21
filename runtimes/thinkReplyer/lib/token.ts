@@ -17,8 +17,11 @@ export async function tokenize(
   return result;
 }
 
-export function getTokensByIdFromDatabase(id: string): database.Token {
-  const dict: database.TokenDic = database.getTokenDic();
+export function getTokensByIdFromDatabase(
+  id: string,
+  databaseDirectory?: string
+): database.Token {
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
   const result: database.Token[] = [];
 
   dict.forEach((word) => {
@@ -32,8 +35,11 @@ export function getTokensByIdFromDatabase(id: string): database.Token {
   return result[0];
 }
 
-export function getTokensByPosFromDatabase(pos: string): database.Token[] {
-  const dict: database.TokenDic = database.getTokenDic();
+export function getTokensByPosFromDatabase(
+  pos: string,
+  databaseDirectory?: string
+): database.Token[] {
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
   const result: database.Token[] = [];
 
   dict.forEach((word) => {
@@ -47,8 +53,11 @@ export function getTokensByPosFromDatabase(pos: string): database.Token[] {
   return result;
 }
 
-export function getTokenByPosFromDatabase(pos: string): database.Token {
-  const dict: database.TokenDic = database.getTokenDic();
+export function getTokenByPosFromDatabase(
+  pos: string,
+  databaseDirectory?: string
+): database.Token {
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
   const result: database.Token[] = [];
 
   dict.forEach((word) => {
@@ -81,9 +90,10 @@ export function getToken(
 }
 
 export function getDuplicationTokensFromDatabase(
-  token: database.Token
+  token: database.Token,
+  databaseDirectory?: string
 ): database.Token[] {
-  const dict: database.TokenDic = database.getTokenDic();
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
   const result: database.Token[] = [];
 
   dict.forEach((word) => {
@@ -229,9 +239,10 @@ export function markReplaceableTokensWithPos(
 
 export function replaceTokenByDatabaseById(
   tokenId: string,
-  token: database.Token
+  token: database.Token,
+  databaseDirectory?: string
 ) {
-  const dict: database.TokenDic = database.getTokenDic();
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
 
   dict.forEach((word, i) => {
     if (!word) return;
@@ -241,7 +252,7 @@ export function replaceTokenByDatabaseById(
     dict[i] = token;
   });
 
-  database.setTokenDic(dict);
+  database.setTokenDic(dict, databaseDirectory);
 }
 
 export function replaceExistingTokens(tokens: database.Token[]) {
@@ -257,17 +268,23 @@ export function replaceExistingTokens(tokens: database.Token[]) {
   return tokens;
 }
 
-export function addTokenToDatabase(token: database.Token) {
+export function addTokenToDatabase(
+  token: database.Token,
+  databaseDirectory?: string
+) {
   if (getDuplicationTokensFromDatabase(token).length !== 0) return;
-  const dict: database.TokenDic = database.getTokenDic();
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
 
   dict[dict.length] = token;
 
-  database.setTokenDic(dict);
+  database.setTokenDic(dict, databaseDirectory);
 }
 
-export function addTokensToDatabase(tokens: database.Token[]) {
-  const dict: database.TokenDic = database.getTokenDic();
+export function addTokensToDatabase(
+  tokens: database.Token[],
+  databaseDirectory?: string
+) {
+  const dict: database.TokenDic = database.getTokenDic(databaseDirectory);
 
   tokens.forEach((token) => {
     const duplicationToken = getDuplicationTokensFromDatabase(token);
@@ -277,7 +294,7 @@ export function addTokensToDatabase(tokens: database.Token[]) {
     dict[dict.length] = token;
   });
 
-  database.setTokenDic(dict);
+  database.setTokenDic(dict, databaseDirectory);
 }
 
 export function convertKuromojisToTokens(

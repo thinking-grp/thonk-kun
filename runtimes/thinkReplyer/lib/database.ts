@@ -1,15 +1,17 @@
 import * as fs from "fs";
 
-export function getTokenDic(): TokenDic {
-  if (!fs.existsSync(`${__dirname}/../assets/token_dictionary.db`)) {
+export function getTokenDic(databaseDirectory?: string): TokenDic {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
+  if (!fs.existsSync(`${databaseDirectory}/token_dictionary.db`)) {
     fs.writeFileSync(
-      `${__dirname}/../assets/token_dictionary.db`,
+      `${databaseDirectory}/token_dictionary.db`,
       JSON.stringify([])
     );
   }
 
   return JSON.parse(
-    fs.readFileSync(`${__dirname}/../assets/token_dictionary.db`, {
+    fs.readFileSync(`${databaseDirectory}/token_dictionary.db`, {
       encoding: "utf-8",
     })
   );
@@ -67,16 +69,18 @@ export type Token = {
 
 export type TokenDic = Token[];
 
-export function getSyntaxDic(): SyntaxDic {
-  if (!fs.existsSync(`${__dirname}/../assets/syntax_dictionary.db`)) {
+export function getSyntaxDic(databaseDirectory?: string): SyntaxDic {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
+  if (!fs.existsSync(`${databaseDirectory}/syntax_dictionary.db`)) {
     fs.writeFileSync(
-      `${__dirname}/../assets/syntax_dictionary.db`,
+      `${databaseDirectory}/syntax_dictionary.db`,
       JSON.stringify([])
     );
   }
 
   return JSON.parse(
-    fs.readFileSync(`${__dirname}/../assets/syntax_dictionary.db`, {
+    fs.readFileSync(`${databaseDirectory}/syntax_dictionary.db`, {
       encoding: "utf-8",
     })
   );
@@ -91,16 +95,18 @@ export type Syntax = {
 
 export type SyntaxDic = Syntax[];
 
-export function getTokenGroupDic(): TokenGroupDic {
-  if (!fs.existsSync(`${__dirname}/../assets/token_group_dictionary.db`)) {
+export function getTokenGroupDic(databaseDirectory?: string): TokenGroupDic {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
+  if (!fs.existsSync(`${databaseDirectory}/token_group_dictionary.db`)) {
     fs.writeFileSync(
-      `${__dirname}/../assets/token_group_dictionary.db`,
+      `${databaseDirectory}/token_group_dictionary.db`,
       JSON.stringify([])
     );
   }
 
   return JSON.parse(
-    fs.readFileSync(`${__dirname}/../assets/token_group_dictionary.db`, {
+    fs.readFileSync(`${databaseDirectory}/token_group_dictionary.db`, {
       encoding: "utf-8",
     })
   );
@@ -114,16 +120,18 @@ export type TokenGroup = {
 
 export type TokenGroupDic = TokenGroup[];
 
-export function getReplySyntaxDic(): ReplySyntaxDic {
-  if (!fs.existsSync(`${__dirname}/../assets/reply_syntax_dictionary.db`)) {
+export function getReplySyntaxDic(databaseDirectory?: string): ReplySyntaxDic {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
+  if (!fs.existsSync(`${databaseDirectory}/reply_syntax_dictionary.db`)) {
     fs.writeFileSync(
-      `${__dirname}/../assets/reply_syntax_dictionary.db`,
+      `${databaseDirectory}/reply_syntax_dictionary.db`,
       JSON.stringify([])
     );
   }
 
   return JSON.parse(
-    fs.readFileSync(`${__dirname}/../assets/reply_syntax_dictionary.db`, {
+    fs.readFileSync(`${databaseDirectory}/reply_syntax_dictionary.db`, {
       encoding: "utf-8",
     })
   );
@@ -197,52 +205,73 @@ export type Knowledge = TwoTokensTypeKnowledge | HowToTypeKnowledge;
 
 export type KnowledgeDic = Knowledge[];
 
-export function getKnowledgeDic(): KnowledgeDic {
-  if (!fs.existsSync(`${__dirname}/../assets/knowledge_dictionary.db`)) {
+export function getKnowledgeDic(databaseDirectory?: string): KnowledgeDic {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
+  if (!fs.existsSync(`${databaseDirectory}/knowledge_dictionary.db`)) {
     fs.writeFileSync(
-      `${__dirname}/../assets/knowledge_dictionary.db`,
+      `${databaseDirectory}/knowledge_dictionary.db`,
       JSON.stringify([])
     );
   }
 
   return JSON.parse(
-    fs.readFileSync(`${__dirname}/../assets/knowledge_dictionary.db`, {
+    fs.readFileSync(`${databaseDirectory}/knowledge_dictionary.db`, {
       encoding: "utf-8",
     })
   );
 }
 
-export function setTokenDic(object: TokenDic) {
+export function setTokenDic(object: TokenDic, databaseDirectory?: string) {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
   fs.writeFileSync(
-    `${__dirname}/../assets/token_dictionary.db`,
+    `${databaseDirectory}/token_dictionary.db`,
     JSON.stringify(object, null, "\t")
   );
 }
 
-export function setSyntaxDic(object: SyntaxDic) {
+export function setSyntaxDic(object: SyntaxDic, databaseDirectory?: string) {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
   fs.writeFileSync(
-    `${__dirname}/../assets/syntax_dictionary.db`,
+    `${databaseDirectory}/syntax_dictionary.db`,
     JSON.stringify(object, null, "\t")
   );
 }
 
-export function setTokenGroupDic(object: TokenGroupDic) {
+export function setTokenGroupDic(
+  object: TokenGroupDic,
+  databaseDirectory?: string
+) {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
   fs.writeFileSync(
-    `${__dirname}/../assets/token_group_dictionary.db`,
+    `${databaseDirectory}/token_group_dictionary.db`,
     JSON.stringify(object, null, "\t")
   );
 }
 
-export function setReplySyntaxDic(object: ReplySyntaxDic) {
+export function setReplySyntaxDic(
+  object: ReplySyntaxDic,
+  databaseDirectory?: string
+) {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
   fs.writeFileSync(
-    `${__dirname}/../assets/reply_syntax_dictionary.db`,
+    `${databaseDirectory}/reply_syntax_dictionary.db`,
     JSON.stringify(object, null, "\t")
   );
 }
 
-export function setKnowledgeDic(object: KnowledgeDic) {
+export function setKnowledgeDic(
+  object: KnowledgeDic,
+  databaseDirectory?: string
+) {
+  if (!databaseDirectory) databaseDirectory = `${__dirname}/../assets`;
+
   fs.writeFileSync(
-    `${__dirname}/../assets/knowledge_dictionary.db`,
+    `${databaseDirectory}/knowledge_dictionary.db`,
     JSON.stringify(object, null, "\t")
   );
 }

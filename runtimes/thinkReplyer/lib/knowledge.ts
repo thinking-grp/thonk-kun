@@ -372,18 +372,24 @@ export function isTwoTokensKnowledge(syntax: database.Syntax): boolean {
   );
 }
 
-export function addKnowledgeToDatabase(knowledge: database.Knowledge) {
-  const dict: database.KnowledgeDic = database.getKnowledgeDic();
+export function addKnowledgeToDatabase(
+  knowledge: database.Knowledge,
+  databaseDirectory?: string
+) {
+  const dict: database.KnowledgeDic =
+    database.getKnowledgeDic(databaseDirectory);
 
   dict[dict.length] = knowledge;
 
-  database.setKnowledgeDic(dict);
+  database.setKnowledgeDic(dict, databaseDirectory);
 }
 
 export function getDuplicationKnowledges(
-  knowledge: database.Knowledge
+  knowledge: database.Knowledge,
+  databaseDirectory?: string
 ): database.Knowledge[] {
-  const dict: database.KnowledgeDic = database.getKnowledgeDic();
+  const dict: database.KnowledgeDic =
+    database.getKnowledgeDic(databaseDirectory);
   const result: database.Knowledge[] = [];
 
   dict.forEach((dictKnowledge) => {
@@ -415,9 +421,10 @@ export function getDuplicationKnowledges(
 
 export function getKnowledgeFromDatabase(
   type: database.KnowledgeTypes,
-  what?: database.Token[]
+  what?: database.Token[],
+  databaseDirectory?: string
 ): database.Knowledge[] {
-  const dict = database.getKnowledgeDic();
+  const dict = database.getKnowledgeDic(databaseDirectory);
 
   const result: database.Knowledge[] = [];
   dict.forEach((knowledge) => {

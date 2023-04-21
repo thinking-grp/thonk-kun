@@ -5,7 +5,8 @@ import * as syntaxManager from "./syntax";
 import * as knowledgeManager from "./knowledge";
 
 export type GenerateOptions = {
-  allowTrain: boolean;
+  allowTrain?: boolean;
+  databaseDirectory?: string;
 };
 
 export async function generateReply(
@@ -13,8 +14,12 @@ export async function generateReply(
   history: string[],
   options: GenerateOptions = {
     allowTrain: false,
+    databaseDirectory: `${__dirname}/../assets/`,
   }
 ): Promise<database.Token[]> {
+  if (!options.databaseDirectory)
+    options.databaseDirectory = `${__dirname}/../assets/`;
+
   if (text.startsWith("/##-")) {
     let result: database.Token[] = [];
 
@@ -247,7 +252,10 @@ export async function generateReply(
       ) {
         replySyntax.mean = syntaxManager.createSyntaxMean(replySyntax);
 
-        syntaxManager.addSyntaxToDatabase(replySyntax);
+        syntaxManager.addSyntaxToDatabase(
+          replySyntax,
+          options.databaseDirectory
+        );
       }
 
       if (
@@ -257,7 +265,10 @@ export async function generateReply(
         const knowledge =
           knowledgeManager.createTwoTokensKnowledge(replySyntax);
 
-        knowledgeManager.addKnowledgeToDatabase(knowledge);
+        knowledgeManager.addKnowledgeToDatabase(
+          knowledge,
+          options.databaseDirectory
+        );
 
         const tokens = tokenManager.convertKuromojisToTokens(
           await tokenManager.tokenize("そうなんですね。覚えました。")
