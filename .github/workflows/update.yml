@@ -127,7 +127,7 @@ jobs:
       - name: Test
         working-directory: ./thonk-kun.new
         run: |
-          rm -r ./runtimes/thinkReplyer/assets/*
+          cp -ra ../thonk-kun.backup/runtimes/thinkReplyer/assets/* ./runtimes/thinkReplyer/assets/*
 
           if ! diff -qr --speed-large-files ./ ../thonk-kun.backup >/dev/null 2>&1;
           then
