@@ -26,7 +26,8 @@ export type QuestionType =
   | "x-or-y"
   | "x-isnt-y"
   | "x-and-y"
-  | "confirm";
+  | "confirm"
+  | "none";
 
 export type SyntaxMean = {
   is?: Is[];

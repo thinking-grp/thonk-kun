@@ -228,7 +228,7 @@ export async function generateReply(
     );
 
     result = tokens;
-  } else {
+  } else if (replySyntax.mean[0].question?.type !== "none" && replySyntax.mean[0].question?.type) {
     if (options.allowTrain) {
       if (
         syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length ===
@@ -269,6 +269,12 @@ export async function generateReply(
 
       result = tokens;
     }
+  } else {
+    const tokens = tokenManager.convertKuromojisToTokens(
+      await tokenManager.tokenize("そうなんですね。")
+    );
+
+    result = tokens;
   }
 
   return result;
