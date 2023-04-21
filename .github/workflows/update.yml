@@ -135,6 +135,7 @@ jobs:
             npm install
             cd ../../
             npm test
+            rm -r ./runtimes/thinkReplyer/assets/*
           else
             echo "Folder contents are the same."
           fi
