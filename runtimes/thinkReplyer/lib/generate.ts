@@ -1,4 +1,5 @@
 import * as tokenManager from "./token";
+import * as tokenGroupManager from "./token_group";
 import * as database from "./database";
 import * as syntaxManager from "./syntax";
 import * as knowledgeManager from "./knowledge";
@@ -116,7 +117,7 @@ export async function generateReply(
                   )}です。`
                 )
               );
-            } else {
+            } else if (tokenGroupManager.isWhatToken(knowledgeTokens[1][0])) {
               tokens = tokenManager.convertKuromojisToTokens(
                 await tokenManager.tokenize(
                   `${tokenManager.convertTokensToString(
@@ -126,9 +127,25 @@ export async function generateReply(
                   )}です。`
                 )
               );
-            }
 
-            result = tokens;
+              result = tokens;
+            } else {
+              if (knowledges[0].is[1][0] === knowledgeTokens[1]) {
+                tokens = tokenManager.convertKuromojisToTokens(
+                  await tokenManager.tokenize(
+                    `はい、${tokenManager.convertTokensToString(knowledgeTokens[0])}は${tokenManager.convertTokensToString(knowledgeTokens[1])}です。`
+                  )
+                );
+              } else {
+                tokens = tokenManager.convertKuromojisToTokens(
+                  await tokenManager.tokenize(
+                    `${tokenManager.convertTokensToString(knowledgeTokens[0])}は${tokenManager.convertTokensToString(knowledgeTokens[1])}です。`
+                  )
+                );
+              }
+              
+              result = tokens;
+            }
           }
         }
       } else if (
