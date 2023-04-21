@@ -151,6 +151,7 @@ jobs:
         run: |
           rm -rf ./thonk-kun.new/node_modules
           rm -rf ./thonk-kun.new/runtimes/thinkReplyer/node_modules
+          rm -rf ./thonk-kun.new/runtimes/thinkReplyer/temp
           
           diff -qr ./thonk-kun.new ./thonk-kun.backup
           
