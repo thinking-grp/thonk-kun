@@ -36,7 +36,7 @@ jobs:
         run: |
           # 特定のフォルダ3のリストを作成
 
-          exclude_folders=(.github src .gitignore)
+          exclude_folders=(.github src .gitignore runtimes/thinkReplyer/assets)
 
 
           # 特定のフォルダ1内のフォルダリストを作成
@@ -127,6 +127,8 @@ jobs:
       - name: Test
         working-directory: ./thonk-kun.new
         run: |
+          rm -r ./runtimes/thinkReplyer/assets/*
+
           if ! diff -qr --speed-large-files ./ ../thonk-kun.backup >/dev/null 2>&1;
           then
             echo "Folder differences found."
@@ -135,7 +137,6 @@ jobs:
             npm install
             cd ../../
             npm test
-            rm -r ./runtimes/thinkReplyer/assets/*
           else
             echo "Folder contents are the same."
           fi
