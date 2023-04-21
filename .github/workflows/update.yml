@@ -152,7 +152,10 @@ jobs:
           rm -rf ./thonk-kun.new/node_modules
           rm -rf ./thonk-kun.new/runtimes/thinkReplyer/node_modules
           
-          if ! diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null; then
+          diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null 2>&1
+          
+          if ! diff -qr ./thonk-kun.new ./thonk-kun.backup >/dev/null 2>&1;
+          then
             echo "Folder contents are different."
 
             rm -rf ./thonk-kun.backup
