@@ -133,17 +133,25 @@ export async function generateReply(
               if (knowledges[0].is[1][0] === knowledgeTokens[1]) {
                 tokens = tokenManager.convertKuromojisToTokens(
                   await tokenManager.tokenize(
-                    `はい、${tokenManager.convertTokensToString(knowledgeTokens[0])}は${tokenManager.convertTokensToString(knowledgeTokens[1])}です。`
+                    `はい、${tokenManager.convertTokensToString(
+                      knowledgeTokens[0]
+                    )}は${tokenManager.convertTokensToString(
+                      knowledgeTokens[1]
+                    )}です。`
                   )
                 );
               } else {
                 tokens = tokenManager.convertKuromojisToTokens(
                   await tokenManager.tokenize(
-                    `${tokenManager.convertTokensToString(knowledgeTokens[0])}は${tokenManager.convertTokensToString(knowledgeTokens[1])}です。`
+                    `${tokenManager.convertTokensToString(
+                      knowledgeTokens[0]
+                    )}は${tokenManager.convertTokensToString(
+                      knowledgeTokens[1]
+                    )}です。`
                   )
                 );
               }
-              
+
               result = tokens;
             }
           }
@@ -228,7 +236,10 @@ export async function generateReply(
     );
 
     result = tokens;
-  } else if (replySyntax.mean[0].question?.type !== "none" && replySyntax.mean[0].question?.type) {
+  } else if (
+    replySyntax.mean[0].question?.type !== "none" &&
+    replySyntax.mean[0].question?.type
+  ) {
     if (options.allowTrain) {
       if (
         syntaxManager.getDuplicationSyntaxsFromDatabase(replySyntax).length ===

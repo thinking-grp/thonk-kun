@@ -10,7 +10,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -24,7 +24,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -38,7 +38,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -52,7 +52,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -66,7 +66,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -80,7 +80,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -94,7 +94,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -108,7 +108,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -122,7 +122,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
@@ -136,7 +136,7 @@ describe("knowledge", () => {
     const tokens = tokenManager.convertKuromojisToTokens(
       await tokenManager.tokenize(text)
     );
-  
+
     const syntax = syntaxManager.createSyntax(tokens);
 
     const result = knowledgeManager.whichOfTwoTokensKnowledgeTypes(syntax);
