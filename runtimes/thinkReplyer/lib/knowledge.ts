@@ -55,11 +55,7 @@ export function whichOfTwoTokensKnowledgeTypes(
             syntax.tokens[index + 1].basic_form === "できる"
           ) {
             type = "x-can-y";
-          } else if (
-            syntax.tokens[index + 1] &&
-            syntax.tokens[index + 1].pos === "助動詞"
-          ) {
-            // ○○は○○"です" or ○○は○○"では"
+          } else {
             type = "x-is-y";
           }
         }
