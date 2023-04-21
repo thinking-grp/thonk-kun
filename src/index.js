@@ -73,7 +73,7 @@ client.on("messageCreate", async (message) => {
     message.channel.sendTyping();
     
     const result = await jsModelProcess.interact(message.content, undefined, {
-      canTrain: true
+      allowTrain: true
     });
     
     if (result) message.channel.send(result);
