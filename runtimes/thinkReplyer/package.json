@@ -1,7 +1,7 @@
 {
   "name": "thinkreplyer",
   "version": "1.0.0-alpha.1",
-  "description": "thinkReplyer is a pseudo AI model for thinkerAI developed by thinking-grp.",
+  "description": "thinkReplyer is a pseudo AI model for thinkerAI developed by thinking.",
   "main": "index.ts",
   "scripts": {
     "test": "jest",

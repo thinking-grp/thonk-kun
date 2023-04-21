@@ -71,7 +71,12 @@ export function splitSentence(
 export function isQuestion(tokens: database.Token[]): boolean {
   let result = 0;
   tokens.forEach((token, i) => {
-    if ((!token.pos_detail_1.includes("並立助詞") || !token.pos_detail_1.includes("副助詞")) && token.pos_detail_1.includes("終助詞") && tokens[i + 1]) {
+    if (
+      (!token.pos_detail_1.includes("並立助詞") ||
+        !token.pos_detail_1.includes("副助詞")) &&
+      token.pos_detail_1.includes("終助詞") &&
+      tokens[i + 1]
+    ) {
       if (
         (tokens[i + 1].pos !== "名詞" || tokens[i + 1].pos !== "形容詞") &&
         !tokens[i + 1].pos_detail_1.includes("終助詞")

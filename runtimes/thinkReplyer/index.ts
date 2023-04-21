@@ -75,8 +75,20 @@ export async function train(trainingData: any, options: any) {
       syntaxManager.addSyntaxToDatabase(syntax);
 
       if (!syntax.mean) return;
-    } else {
-      return;
+    }
+
+    const replacedSyntax = syntaxManager.replaceWithExistingSyntax(syntax);
+
+    replacedSyntax.mean = syntaxManager.createSyntaxMean(replacedSyntax);
+
+    if (
+      knowledgeManager.isTwoTokensKnowledge(replacedSyntax) &&
+      !syntaxManager.isQuestion(replacedSyntax.tokens)
+    ) {
+      const knowledge =
+        knowledgeManager.createTwoTokensKnowledge(replacedSyntax);
+
+      knowledgeManager.addKnowledgeToDatabase(knowledge);
     }
   });
 
@@ -125,15 +137,9 @@ export async function train(trainingData: any, options: any) {
 export async function interact(
   text: string,
   history: string[] = [],
-  options: {
-    canTrain: boolean;
-  } = {
-    canTrain: false,
-  }
+  options?: generator.GenerateOptions
 ): Promise<string> {
-  const result = await generator.generateReply(text, {
-    allowTrain: true,
-  });
+  const result = await generator.generateReply(text, history, options);
 
   return tokenManager.convertTokensToString(result);
 }

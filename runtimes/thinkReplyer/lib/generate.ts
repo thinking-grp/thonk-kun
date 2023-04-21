@@ -9,6 +9,7 @@ export type GenerateOptions = {
 
 export async function generateReply(
   text: string,
+  history: string[],
   options: GenerateOptions = {
     allowTrain: false,
   }
@@ -221,26 +222,29 @@ export async function generateReply(
         syntaxManager.addSyntaxToDatabase(replySyntax);
       }
 
-      const filteredSyntax = syntaxManager.cleanSyntaxForTwoTokensKnowledgeType(
-        "x-is-y",
-        replySyntax
-      );
-
       if (
-        knowledgeManager.isTwoTokensKnowledge(filteredSyntax) &&
-        !syntaxManager.isQuestion(filteredSyntax.tokens)
+        knowledgeManager.isTwoTokensKnowledge(replySyntax) &&
+        !syntaxManager.isQuestion(replySyntax.tokens)
       ) {
         const knowledge =
-          knowledgeManager.createTwoTokensKnowledge(filteredSyntax);
+          knowledgeManager.createTwoTokensKnowledge(replySyntax);
 
         knowledgeManager.addKnowledgeToDatabase(knowledge);
+
+        const tokens = tokenManager.convertKuromojisToTokens(
+          await tokenManager.tokenize("そうなんですね。覚えました。")
+        );
+
+        result = tokens;
+      } else {
+        const tokens = tokenManager.convertKuromojisToTokens(
+          await tokenManager.tokenize(
+            "そうなんですね。教えてくれてありがとう。"
+          )
+        );
+
+        result = tokens;
       }
-
-      const tokens = tokenManager.convertKuromojisToTokens(
-        await tokenManager.tokenize("そうなんですね。覚えました。")
-      );
-
-      result = tokens;
     } else {
       const tokens = tokenManager.convertKuromojisToTokens(
         await tokenManager.tokenize("そうなんですね。教えてくれてありがとう。")
