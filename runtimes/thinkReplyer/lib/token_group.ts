@@ -99,6 +99,69 @@ export function isWhatToken(token: database.Token): boolean {
   return result.length !== 0;
 }
 
+export function isReactionToken(token: database.Token): boolean {
+  const dict: database.TokenGroup[] = getTokenGroupById("tng-reaction");
+
+  const result: string[] = [];
+
+  if (dict[0]) {
+    dict[0].tokenIds.forEach((tokensId) => {
+      tokensId.forEach((tokenId) => {
+        const databaseToken = tokenManager.getTokensByIdFromDatabase(tokenId);
+
+        const token2 = { ...token };
+        const databaseToken2 = { ...databaseToken };
+
+        token2.id = "";
+        databaseToken2.id = "";
+
+        if (token2.text === databaseToken2.text)
+          result[result.length] = tokenId;
+      });
+    });
+  }
+
+  return result.length !== 0;
+}
+
+export function addReactionTokens(tokenId: string, negaposi: number) {
+  const tokenGroups = getTokenGroupById("tng-reaction");
+
+  const token = tokenManager.getTokensByIdFromDatabase(tokenId);
+
+  if (!token) throw new Error();
+
+  if (tokenGroups.length === 0) {
+    const tokenGroup: database.TokenGroup = {
+      id: "tng-reaction",
+      tokenIds: [[tokenId]],
+      negaposi: negaposi,
+    };
+
+    addTokenGroupToDatabase(tokenGroup);
+
+    return;
+  }
+
+  for (let index = 0; index < tokenGroups[0].tokenIds.length; index++) {
+    for (let i = 0; i < tokenGroups[0].tokenIds[index].length; i++) {
+      const dbTokenId = tokenGroups[0].tokenIds[index][i];
+
+      if (dbTokenId === tokenId) return;
+      if (tokenManager.getTokensByIdFromDatabase(dbTokenId).text === token.text)
+        return;
+    }
+  }
+
+  tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length] = [];
+
+  tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length - 1][
+    tokenGroups[0].tokenIds[tokenGroups[0].tokenIds.length - 1].length
+  ] = tokenId;
+
+  editTokenGroupById("tng-reaction", tokenGroups[0]);
+}
+
 export function addTokenGroupToDatabase(tokenGroup: database.TokenGroup) {
   const dict: database.TokenGroupDic = database.getTokenGroupDic();
 

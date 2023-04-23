@@ -116,6 +116,7 @@ export function createSyntaxMean(
       is: [],
       isQuestion: isQuestion(syntax.tokens),
       isImperative: isImperative(syntax.tokens),
+      isReaction: isReaction(syntax.tokens),
     };
   }
 
@@ -230,6 +231,18 @@ export function isImperative(tokens: database.Token[]): boolean {
   });
 
   return probabilityOfImperative > 0;
+}
+
+export function isReaction(tokens: database.Token[]): boolean {
+  let probabilityOfReaction = 0;
+
+  if (tokens.length === 1) probabilityOfReaction += 0.6;
+
+  tokens.forEach((token) => {
+    if (tokenGroupManager.isReactionToken(token)) probabilityOfReaction += 0.5;
+  });
+
+  return probabilityOfReaction > 0;
 }
 
 export function generateFromRandomSyntax(

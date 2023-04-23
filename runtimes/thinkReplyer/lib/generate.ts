@@ -310,6 +310,12 @@ export async function generateReply(
     );
 
     result = tokens;
+  } else if (replySyntax.mean[0].isReaction) {
+    const tokens = tokenManager.convertKuromojisToTokens(
+      await tokenManager.tokenize("😟")
+    );
+
+    result = tokens;
   } else if (
     replySyntax.mean[0].question?.type !== "none" &&
     replySyntax.mean[0].question?.type

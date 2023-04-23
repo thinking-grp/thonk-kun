@@ -37,6 +37,7 @@ export type SyntaxMean = {
   or?: Or[];
   isQuestion: boolean;
   isImperative?: boolean;
+  isReaction?: boolean;
   question?: {
     type: QuestionType;
     when?: Date;
